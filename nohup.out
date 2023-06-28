@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/frenzyyx/discord_rpg_bot/bot.py", line 2, in <module>
+    from dotenv import load_dotenv
+ModuleNotFoundError: No module named 'dotenv'
