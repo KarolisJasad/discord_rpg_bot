@@ -5,6 +5,7 @@ from discord.ext import commands
 from utilities.gamebot import GameBot
 from cogs.classmenu import ClassMenu
 from cogs.startrpg import UsernameEntry
+from cogs.pve import Pve
 
 
 load_dotenv()
@@ -19,6 +20,7 @@ intents.message_content = True
 init_cogs = [
     "cogs.classmenu",
     "cogs.startrpg",
+    "cogs.pve"
 ]
 
 bot = GameBot(init_cogs)
@@ -28,6 +30,7 @@ async def on_ready():
     print("Bot is online.")
     await bot.add_cog(ClassMenu(bot)) 
     await bot.add_cog(UsernameEntry(bot))
+    await bot.add_cog(Pve(bot))
 
 # Add the ClassMenu cog to the bot
 bot.run(TOKEN)
