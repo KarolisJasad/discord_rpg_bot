@@ -53,7 +53,7 @@ class ClassMenu(commands.Cog):
                 self.page_index = (self.page_index + 1) % len(class_embeds)
             elif interaction.data["custom_id"] == "select_button":
                 print("Selected button")
-                await sync_to_async(self.handle_class_selection(interaction))
+                await self.handle_class_selection(interaction)
 
             await interaction.message.edit(embed=class_embeds[self.page_index])
 
@@ -86,9 +86,15 @@ class ClassMenu(commands.Cog):
 
         print(selected_class)
         player_id = str(interaction.user.id)
-        player = await sync_to_async(get_object_or_404(Player, player_id=player_id))
-        player.character_class = selected_class
-        await player.save()
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+
+        # Retrieve the currently browsed character class
+        character_class = await sync_to_async(CharacterClass.objects.get)(class_type=selected_class)
+
+        # Update the player's character_class field
+        player.character_class = character_class
+
+        await sync_to_async(player.save)()
 
         await interaction.response.send_message(f"You have selected {selected_class} class.")
 
