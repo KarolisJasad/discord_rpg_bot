@@ -6,23 +6,17 @@ from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from urllib.parse import urlparse
 
-
 class ClassMenu(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
         self.page_index = 0  # Initialize the page_index variable to 0
-        self.previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous",
-                                                 custom_id="previous_button")
+        self.previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous", custom_id="previous_button")
         self.next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Next", custom_id="next_button")
-        self.select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class",
-                                               custom_id="select_button")
+        self.select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class", custom_id="select_button")
 
     @commands.command()
     async def classmenu(self, ctx):
-        warrior_page = discord.Embed(
-            title="Choose your class!",
-            color=discord.Color.blue()
-        )
+        warrior_page = discord.Embed(title="Choose your class!", color=discord.Color.blue())
         warrior_page.add_field(name="Warrior", value="A powerful class specializing in melee combat.")
         warrior_page.add_field(name="Stats", value="HP: 100\nAttack: 80\nDefense: 70\nMagic: 20")
         warrior_page.set_image(url="https://i.imgur.com/gC1E7oa.gif")
@@ -35,10 +29,7 @@ class ClassMenu(commands.Cog):
         rogue_page.add_field(name="Stats", value="HP: 70\nAttack: 60\nDefense: 50\nMagic: 40")
         rogue_page.set_image(url="https://i.imgur.com/CEeh45e.gif")
 
-        mage_page = discord.Embed(
-            title="Choose your class!"
-            color=discord.Color.purple()
-        )
+        mage_page = discord.Embed(title="Choose your class!", color=discord.Color.purple())
         mage_page.add_field(name="Mage", value="A spellcasting class with powerful magical abilities.")
         mage_page.add_field(name="Stats", value="HP: 50\nAttack: 40\nDefense: 30\nMagic: 100")
         mage_page.set_image(url="https://i.imgur.com/CI9x4fc.gif")
@@ -102,8 +93,9 @@ class ClassMenu(commands.Cog):
         await sync_to_async(player.save)()
 
         await interaction.response.send_message(f"You have selected {selected_class} class.")
-
         await interaction.message.delete()
+        introduction_cog = self.bot.get_cog("Introduction")
+        await introduction_cog.introduction(interaction.channel)
 
 def setup(bot):
     bot.add_cog(ClassMenu(bot))
