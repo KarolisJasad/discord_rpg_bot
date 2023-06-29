@@ -36,7 +36,7 @@ class ClassMenu(commands.Cog):
         rogue_page.set_image(url="https://i.imgur.com/CEeh45e.gif")
 
         mage_page = discord.Embed(
-            title="Choose your class!",
+            title="Choose your class!"
             color=discord.Color.purple()
         )
         mage_page.add_field(name="Mage", value="A spellcasting class with powerful magical abilities.")
@@ -51,11 +51,14 @@ class ClassMenu(commands.Cog):
             if interaction.data["custom_id"] == "previous_button":
                 self.page_index = (self.page_index - 1) % len(class_embeds)
                 print(self.page_index)
+                await interaction.response.defer()
             elif interaction.data["custom_id"] == "next_button":
                 self.page_index = (self.page_index + 1) % len(class_embeds)
+                await interaction.response.defer()
             elif interaction.data["custom_id"] == "select_button":
                 print("Selected button")
                 await self.handle_class_selection(interaction)
+                await interaction.response.defer()
 
             await interaction.message.edit(embed=class_embeds[self.page_index])
 
