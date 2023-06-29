@@ -1,10 +1,14 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Player
+from rpgbot.models import Player, CharacterClass
+from django.shortcuts import get_object_or_404
+from asgiref.sync import sync_to_async
+from urllib.parse import urlparse
+
 
 class ClassMenu(commands.Cog):
-    def __init__(self, bot : GameBot):
+    def __init__(self, bot: GameBot):
         self.bot = bot
         self.page_index = 0  # Initialize the page_index variable to 0
 
@@ -16,7 +20,9 @@ class ClassMenu(commands.Cog):
         )
         warrior_page.add_field(name="Warrior", value="A powerful class specializing in melee combat.")
         warrior_page.add_field(name="Stats", value="HP: 100\nAttack: 80\nDefense: 70\nMagic: 20")
-
+        file = discord.File("media/class_images/Warrior.jpg", filename="Warrior.jpg")
+        warrior_page.set_image(url="attachment://Warrior.jpg")
+        
         rogue_page = discord.Embed(
             title="Choose your class!",
             color=discord.Color.green()
@@ -44,45 +50,44 @@ class ClassMenu(commands.Cog):
                 self.page_index = (self.page_index - 1) % len(class_embeds)
             elif interaction.data["custom_id"] == "next_button":
                 self.page_index = (self.page_index + 1) % len(class_embeds)
+            elif interaction.data["custom_id"] == "select_button":
+                print("Selected button")
+                await sync_to_async(self.handle_class_selection(interaction))
 
             await interaction.message.edit(embed=class_embeds[self.page_index])
 
         previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous", custom_id="previous_button")
         next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Next", custom_id="next_button")
+        select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class", custom_id="select_button")
 
         previous_button.callback = on_select_button_click
         next_button.callback = on_select_button_click
+        select_button.callback = on_select_button_click
 
         class_selection_view.add_item(previous_button)
         class_selection_view.add_item(next_button)
         class_selection_view.add_item(select_button)
 
-        class_selection_message = await ctx.send(embed=update_class_message(), view=class_selection_view)
+        await ctx.send(file=file, embed=warrior_page, view=class_selection_view)
 
-        def check_class_selection(interaction):
-            return interaction.user == ctx.author and interaction.message.id == class_selection_message.id
+    async def handle_class_selection(self, interaction):
+        print("Working function")
+        selected_class = None
 
-        try:
-            interaction = await self.bot.wait_for("button_click", check=check_class_selection, timeout=60.0)
-            selected_class = None
+        if self.page_index == 0:
+            selected_class = "Warrior"
+        elif self.page_index == 1:
+            selected_class = "Rogue"
+        elif self.page_index == 2:
+            selected_class = "Mage"
 
-            if interaction.component.label == "Select Class":
-                if self.page_index == 0:
-                    selected_class = "Warrior"
-                elif self.page_index == 1:
-                    selected_class = "Rogue"
-                elif self.page_index == 2:
-                    selected_class = "Mage"
+        print(selected_class)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404(Player, player_id=player_id))
+        player.character_class = selected_class
+        await player.save()
 
-            await interaction.response.send_message(f"You have selected {selected_class} class.")
-
-        except TimeoutError:
-            await class_selection_message.delete()
-            await ctx.send("Class selection timed out.", delete_after=10)
-            return
-
-        await ctx.send(f"Selected class: {selected_class}")
-        # Here you can continue with the logic for the selected class
+        await interaction.response.send_message(f"You have selected {selected_class} class.")
 
 def setup(bot):
     bot.add_cog(ClassMenu(bot))
