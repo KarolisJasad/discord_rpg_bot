@@ -1,11 +1,15 @@
 from django.contrib import admin
-from .models import Player, CharacterClass
+from .models import Player, CharacterClass, Enemy
 # Register your models here.
 
 @admin.register(Player)
-class BuildingAdmin(admin.ModelAdmin):
-    list_display = ('username', 'character_class')
+class PlayerAdmin(admin.ModelAdmin):
+    list_display = ('username', 'character_class', 'max_health', 'current_health', 'attack', 'defense', 'money')
 
 @admin.register(CharacterClass)
-class BuildingAdmin(admin.ModelAdmin):
-    list_display = ('class_type',)
+class CharacterClassAdmin(admin.ModelAdmin):
+    list_display = ('class_type', 'health', 'attack', 'defense')
+
+@admin.register(Enemy)
+class EnemyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'max_health', 'current_health', 'attack', 'defense')
