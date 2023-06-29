@@ -11,12 +11,17 @@ class UsernameEntry(commands.Cog):
 
     @commands.command()
     async def startrpg(self, ctx):
-
         def check_author(m):
             return m.author == ctx.author
 
-        await ctx.send("Please enter your username.")
+        player_exists = await sync_to_async(Player.objects.filter(player_id=ctx.author.id).exists)()
+        if player_exists:
+            # Player entry exists, proceed to the class menu
+            class_menu_command = self.bot.get_command("classmenu")
+            await ctx.invoke(class_menu_command)
+            return
 
+        await ctx.send("Please enter your username.")
         try:
             username_msg = await self.bot.wait_for("message", check=check_author, timeout=60.0)
             username = username_msg.content

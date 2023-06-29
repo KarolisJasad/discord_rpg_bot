@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
+from rpgbot.models import Player
 
 class ClassMenu(commands.Cog):
     def __init__(self, bot : GameBot):
