@@ -2,13 +2,13 @@ import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
 
-class StartRPG(commands.Cog):
+class ClassMenu(commands.Cog):
     def __init__(self, bot : GameBot):
         self.bot = bot
         self.page_index = 0  # Initialize the page_index variable to 0
 
     @commands.command()
-    async def startrpg(self, ctx):
+    async def classmenu(self, ctx):
         warrior_page = discord.Embed(
             title="Warrior Class",
             description="A powerful class specializing in melee combat.",
@@ -84,4 +84,4 @@ class StartRPG(commands.Cog):
         # Here you can continue with the logic for the selected class
 
 def setup(bot):
-    bot.add_cog(StartRPG(bot))
+    bot.add_cog(ClassMenu(bot))

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from cogs.startrpg import StartRPG
+from cogs.startrpg import ClassMenu
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -23,8 +23,8 @@ bot = GameBot(init_cogs)
 @bot.event
 async def on_ready():
     print("Bot is online.")
-    await bot.add_cog(StartRPG(bot)) 
+    await bot.add_cog(ClassMenu(bot)) 
 
- # Add the StartRPG cog to the bot
+ # Add the ClassMenu cog to the bot
 
 bot.run(TOKEN)
