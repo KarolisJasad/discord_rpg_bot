@@ -26,7 +26,7 @@ class ClassMenu(commands.Cog):
         warrior_page.add_field(name="Warrior", value="A powerful class specializing in melee combat.")
         warrior_page.add_field(name="Stats", value="HP: 100\nAttack: 80\nDefense: 70\nMagic: 20")
         warrior_page.set_image(url="https://i.imgur.com/DgzRO8S.png")
-
+        
         rogue_page = discord.Embed(
             title="Choose your class!",
             color=discord.Color.green()
@@ -51,11 +51,14 @@ class ClassMenu(commands.Cog):
             if interaction.data["custom_id"] == "previous_button":
                 self.page_index = (self.page_index - 1) % len(class_embeds)
                 print(self.page_index)
+                await interaction.response.defer()
             elif interaction.data["custom_id"] == "next_button":
                 self.page_index = (self.page_index + 1) % len(class_embeds)
+                await interaction.response.defer()
             elif interaction.data["custom_id"] == "select_button":
                 print("Selected button")
                 await self.handle_class_selection(interaction)
+                await interaction.response.defer()
 
             await interaction.message.edit(embed=class_embeds[self.page_index])
 
