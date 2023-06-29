@@ -90,6 +90,12 @@ class ClassMenu(commands.Cog):
         # Update the player's character_class field
         player.character_class = character_class
 
+        # Update player's stats based on the selected class
+        player.max_health = character_class.health
+        player.current_health = character_class.health
+        player.attack = character_class.attack
+        player.defense = character_class.defense
+
         await sync_to_async(player.save)()
 
         await interaction.response.send_message(f"You have selected {selected_class} class.")
