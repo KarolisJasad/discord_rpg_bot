@@ -11,6 +11,11 @@ class ClassMenu(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
         self.page_index = 0  # Initialize the page_index variable to 0
+        self.previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous",
+                                                 custom_id="previous_button")
+        self.next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Next", custom_id="next_button")
+        self.select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class",
+                                               custom_id="select_button")
 
     @commands.command()
     async def classmenu(self, ctx):
@@ -40,15 +45,12 @@ class ClassMenu(commands.Cog):
 
         class_embeds = [warrior_page, rogue_page, mage_page]
 
-        def update_class_message():
-            return class_embeds[self.page_index]
-
         class_selection_view = discord.ui.View()
-        select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class")
 
         async def on_select_button_click(interaction: discord.Interaction):
             if interaction.data["custom_id"] == "previous_button":
                 self.page_index = (self.page_index - 1) % len(class_embeds)
+                print(self.page_index)
             elif interaction.data["custom_id"] == "next_button":
                 self.page_index = (self.page_index + 1) % len(class_embeds)
             elif interaction.data["custom_id"] == "select_button":
@@ -57,19 +59,13 @@ class ClassMenu(commands.Cog):
 
             await interaction.message.edit(embed=class_embeds[self.page_index])
 
-        previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous",
-                                            custom_id="previous_button")
-        next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Next", custom_id="next_button")
-        select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class",
-                                          custom_id="select_button")
+        self.previous_button.callback = on_select_button_click
+        self.next_button.callback = on_select_button_click
+        self.select_button.callback = on_select_button_click
 
-        previous_button.callback = on_select_button_click
-        next_button.callback = on_select_button_click
-        select_button.callback = on_select_button_click
-
-        class_selection_view.add_item(previous_button)
-        class_selection_view.add_item(next_button)
-        class_selection_view.add_item(select_button)
+        class_selection_view.add_item(self.previous_button)
+        class_selection_view.add_item(self.next_button)
+        class_selection_view.add_item(self.select_button)
 
         await ctx.send(embed=class_embeds[self.page_index], view=class_selection_view)
 
