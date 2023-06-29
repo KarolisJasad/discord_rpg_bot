@@ -5,6 +5,7 @@ from rpgbot.models import Player, CharacterClass
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from urllib.parse import urlparse
+from discord import CustomActivity
 
 class ClassMenu(commands.Cog):
     def __init__(self, bot: GameBot):
@@ -60,11 +61,9 @@ class ClassMenu(commands.Cog):
         class_selection_view.add_item(self.previous_button)
         class_selection_view.add_item(self.next_button)
         class_selection_view.add_item(self.select_button)
-
         await ctx.send(embed=class_embeds[self.page_index], view=class_selection_view)
 
     async def handle_class_selection(self, interaction):
-        print("Working function")
         selected_class = None
 
         if self.page_index == 0:
@@ -91,11 +90,15 @@ class ClassMenu(commands.Cog):
         player.defense = character_class.defense
 
         await sync_to_async(player.save)()
-
+        role_name = selected_class
+        role = discord.utils.get(interaction.guild.roles, name=role_name)
+        if role:
+            await interaction.user.add_roles(role)
         await interaction.response.send_message(f"You have selected {selected_class} class.")
         await interaction.message.delete()
         introduction_cog = self.bot.get_cog("Introduction")
         await introduction_cog.introduction(interaction.channel)
+    
 
 def setup(bot):
     bot.add_cog(ClassMenu(bot))
