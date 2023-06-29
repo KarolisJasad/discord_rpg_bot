@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
 from .classmenu import ClassMenu
+from rpgbot.models import Player
+from asgiref.sync import sync_to_async
 
 class UsernameEntry(commands.Cog):
     def __init__(self, bot: GameBot):
@@ -9,6 +11,7 @@ class UsernameEntry(commands.Cog):
 
     @commands.command()
     async def startrpg(self, ctx):
+
         def check_author(m):
             return m.author == ctx.author
 
@@ -17,7 +20,7 @@ class UsernameEntry(commands.Cog):
         try:
             username_msg = await self.bot.wait_for("message", check=check_author, timeout=60.0)
             username = username_msg.content
-
+            await sync_to_async(Player.objects.create)(player_id=ctx.author.id, username=username)
             await ctx.send(f"Welcome, {username}!")
 
             # Proceed to the class menu

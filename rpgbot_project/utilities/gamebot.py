@@ -1,5 +1,10 @@
 import discord
 from discord.ext import commands
+import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rpgbot_project.settings")
+django.setup()
 
 class GameBot(commands.Bot):
     def __init__(self, cogs: list):

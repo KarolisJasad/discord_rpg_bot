@@ -6,6 +6,7 @@ from utilities.gamebot import GameBot
 from cogs.classmenu import ClassMenu
 from cogs.startrpg import UsernameEntry
 
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
@@ -28,6 +29,5 @@ async def on_ready():
     await bot.add_cog(ClassMenu(bot)) 
     await bot.add_cog(UsernameEntry(bot))
 
- # Add the ClassMenu cog to the bot
-
+# Add the ClassMenu cog to the bot
 bot.run(TOKEN)
