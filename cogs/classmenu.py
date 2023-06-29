@@ -10,24 +10,24 @@ class ClassMenu(commands.Cog):
     @commands.command()
     async def classmenu(self, ctx):
         warrior_page = discord.Embed(
-            title="Warrior Class",
-            description="A powerful class specializing in melee combat.",
+            title="Choose your class!",
             color=discord.Color.blue()
         )
+        warrior_page.add_field(name="Warrior", value="A powerful class specializing in melee combat.")
         warrior_page.add_field(name="Stats", value="HP: 100\nAttack: 80\nDefense: 70\nMagic: 20")
 
         rogue_page = discord.Embed(
-            title="Rogue Class",
-            description="A swift and stealthy class adept at sneaky maneuvers.",
+            title="Choose your class!",
             color=discord.Color.green()
         )
+        rogue_page.add_field(name="Rogue", value="A swift and stealthy class adept at sneaky maneuvers.")
         rogue_page.add_field(name="Stats", value="HP: 70\nAttack: 60\nDefense: 50\nMagic: 40")
 
         mage_page = discord.Embed(
-            title="Mage Class",
-            description="A spellcasting class with powerful magical abilities.",
+            title="Choose your class!",
             color=discord.Color.purple()
         )
+        mage_page.add_field(name="Mage", value="A spellcasting class with powerful magical abilities.")
         mage_page.add_field(name="Stats", value="HP: 50\nAttack: 40\nDefense: 30\nMagic: 100")
 
         class_embeds = [warrior_page, rogue_page, mage_page]
