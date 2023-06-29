@@ -10,6 +10,7 @@ CHARACTER_CLASSES = [
 
 class Player(models.Model):
     player_id = models.CharField(_("player ID"), max_length=50, primary_key=True)
+    discord_name = models.CharField(_("discord_name"), max_length=50, blank=True, null=True)
     username = models.CharField(_("username"), max_length=50)
     character_class = models.ForeignKey(
         "CharacterClass", 
@@ -20,7 +21,6 @@ class Player(models.Model):
         null=True,
     )
     
-
     class Meta:
         verbose_name = _("player")
         verbose_name_plural = _("players")
@@ -33,7 +33,7 @@ class Player(models.Model):
 
 class CharacterClass(models.Model):
     class_type = models.CharField(_("class_type"), max_length=50, choices=CHARACTER_CLASSES)
-    
+    images = models.ImageField(_("character_image"), upload_to="class_images", height_field=None, width_field=None, max_length=None, blank=True, null=True)
 
     class Meta:
         verbose_name = _("characterClass")

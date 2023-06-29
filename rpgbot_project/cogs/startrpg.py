@@ -25,7 +25,7 @@ class UsernameEntry(commands.Cog):
         try:
             username_msg = await self.bot.wait_for("message", check=check_author, timeout=60.0)
             username = username_msg.content
-            await sync_to_async(Player.objects.create)(player_id=ctx.author.id, username=username)
+            await sync_to_async(Player.objects.create)(player_id=ctx.author.id, discord_name=ctx.author.name, username=username)
             await ctx.send(f"Welcome, {username}!")
 
             # Proceed to the class menu
