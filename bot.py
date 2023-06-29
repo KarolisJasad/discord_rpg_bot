@@ -37,6 +37,9 @@ async def button(ctx):
     view = SimpleView()
     await ctx.send(view=view)
 
+# Global variable for page index
+page_index = 0
+
 @bot.command()
 async def startrpg(ctx):
     warrior_page = discord.Embed(
@@ -62,38 +65,32 @@ async def startrpg(ctx):
 
     class_embeds = [warrior_page, rogue_page, mage_page]
 
-    message = await ctx.send(embed=class_embeds[0])
-    page_index = 0
-
-    # Add reactions for navigation
-    await message.add_reaction('⬅️')
-    await message.add_reaction('➡️')
-
-    def check(reaction, user):
-        return user == ctx.author and str(reaction.emoji) in ['⬅️', '➡️']
-
-    while True:
-        try:
-            reaction, _ = await bot.wait_for('reaction_add', timeout=60.0, check=check)
-
-            if str(reaction.emoji) == '➡️':
-                page_index = (page_index + 1) % len(class_embeds)
-            elif str(reaction.emoji) == '⬅️':
-                page_index = (page_index - 1) % len(class_embeds)
-
-            await message.edit(embed=class_embeds[page_index])
-            await message.remove_reaction(reaction, ctx.author)
-
-        except TimeoutError:
-            await message.delete()
-            break
-
-    select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class")
+    def update_class_message():
+        return class_embeds[page_index]
 
     class_selection_view = discord.ui.View()
+    select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Class")
+
+    async def on_select_button_click(interaction: discord.Interaction):
+        global page_index
+        if interaction.data["custom_id"] == "previous_button":
+            page_index = (page_index - 1) % len(class_embeds)
+        elif interaction.data["custom_id"] == "next_button":
+            page_index = (page_index + 1) % len(class_embeds)
+
+        await interaction.message.edit(embed=class_embeds[page_index])
+
+    previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous", custom_id="previous_button")
+    next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Next", custom_id="next_button")
+
+    previous_button.callback = on_select_button_click
+    next_button.callback = on_select_button_click
+
+    class_selection_view.add_item(previous_button)
+    class_selection_view.add_item(next_button)
     class_selection_view.add_item(select_button)
 
-    class_selection_message = await ctx.send("Select your class:", view=class_selection_view)
+    class_selection_message = await ctx.send(embed=update_class_message(), view=class_selection_view)
 
     def check_class_selection(interaction):
         return interaction.user == ctx.author and interaction.message.id == class_selection_message.id
