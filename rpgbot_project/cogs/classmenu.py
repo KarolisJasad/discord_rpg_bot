@@ -25,23 +25,23 @@ class ClassMenu(commands.Cog):
         )
         warrior_page.add_field(name="Warrior", value="A powerful class specializing in melee combat.")
         warrior_page.add_field(name="Stats", value="HP: 100\nAttack: 80\nDefense: 70\nMagic: 20")
-        warrior_page.set_image(url="https://i.imgur.com/DgzRO8S.png")
-        
+        warrior_page.set_image(url="https://i.imgur.com/gC1E7oa.gif")
+
         rogue_page = discord.Embed(
             title="Choose your class!",
             color=discord.Color.green()
         )
         rogue_page.add_field(name="Rogue", value="A swift and stealthy class adept at sneaky maneuvers.")
         rogue_page.add_field(name="Stats", value="HP: 70\nAttack: 60\nDefense: 50\nMagic: 40")
-        rogue_page.set_image(url="https://i.imgur.com/AffR54p.png")
+        rogue_page.set_image(url="https://i.imgur.com/CEeh45e.gif")
 
         mage_page = discord.Embed(
-            title="Choose your class!",
+            title="Choose your class!"
             color=discord.Color.purple()
         )
         mage_page.add_field(name="Mage", value="A spellcasting class with powerful magical abilities.")
         mage_page.add_field(name="Stats", value="HP: 50\nAttack: 40\nDefense: 30\nMagic: 100")
-        mage_page.set_image(url="https://i.imgur.com/9hAD0yP.png")
+        mage_page.set_image(url="https://i.imgur.com/CI9x4fc.gif")
 
         class_embeds = [warrior_page, rogue_page, mage_page]
 
@@ -92,6 +92,12 @@ class ClassMenu(commands.Cog):
 
         # Update the player's character_class field
         player.character_class = character_class
+
+        # Update player's stats based on the selected class
+        player.max_health = character_class.health
+        player.current_health = character_class.health
+        player.attack = character_class.attack
+        player.defense = character_class.defense
 
         await sync_to_async(player.save)()
 
