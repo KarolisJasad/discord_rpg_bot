@@ -94,6 +94,7 @@ class ClassMenu(commands.Cog):
 
         await interaction.response.send_message(f"You have selected {selected_class} class.")
 
+        await interaction.message.delete()
 
 def setup(bot):
     bot.add_cog(ClassMenu(bot))
