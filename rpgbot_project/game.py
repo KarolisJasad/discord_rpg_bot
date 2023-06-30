@@ -8,6 +8,7 @@ from cogs.startrpg import UsernameEntry
 from cogs.pve import Pve
 from cogs.introduction import Introduction
 from cogs.area_selection import AreaSelection
+from cogs.forest_rat import ForestRat
 
 
 load_dotenv()
@@ -25,6 +26,7 @@ init_cogs = [
     "cogs.pve",
     "cogs.introduction",
     "cogs.area_selection"
+    'cogs.forest_rat'
 ]
 
 bot = GameBot(init_cogs)
@@ -37,6 +39,7 @@ async def on_ready():
     await bot.add_cog(Pve(bot))
     await bot.add_cog(Introduction(bot))
     await bot.add_cog(AreaSelection(bot))
+    await bot.add_cog(ForestRat(bot))
 
 # Add the ClassMenu cog to the bot
 bot.run(TOKEN)
