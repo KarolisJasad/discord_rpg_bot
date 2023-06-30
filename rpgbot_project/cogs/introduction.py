@@ -24,9 +24,12 @@ class Introduction(commands.Cog):
 
         view = discord.ui.View()
 
-        async def on_continue_button_click(inter: discord.Interaction):
-            await inter.response.send_message("You've decided to continue your journey", ephemeral=True)
-            await inter.message.delete()
+        async def on_continue_button_click(interaction: discord.Interaction):
+            await interaction.response.send_message("You've decided to continue your journey", ephemeral=True)
+            await interaction.message.delete()
+
+            area_selection_cog = self.bot.get_cog("AreaSelection")
+            await area_selection_cog.areaselection(interaction.channel)
 
         continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Continue", custom_id="continue_button")
 

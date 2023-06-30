@@ -15,7 +15,7 @@ class AreaSelection(commands.Cog):
         self.select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Location", custom_id="select_location")
 
     @commands.command()
-    async def areaselection(self, ctx):
+    async def areaselection(self, channel):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         cave_location = await sync_to_async(Location.objects.get)(name="Cave")
         forest_page = discord.Embed(title=forest_location.name, color=discord.Color.blue())
@@ -51,7 +51,7 @@ class AreaSelection(commands.Cog):
         location_selection_view.add_item(self.previous_button)
         location_selection_view.add_item(self.next_button)
         location_selection_view.add_item(self.select_button)
-        await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
+        await channel.send(embed=location_embeds[self.page_index], view=location_selection_view)
 
 
 def setup(bot):
