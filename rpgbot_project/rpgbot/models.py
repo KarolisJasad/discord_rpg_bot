@@ -41,12 +41,6 @@ class Player(models.Model):
         verbose_name = _("player")
         verbose_name_plural = _("players")
 
-    def __str__(self):
-        return self.username
-
-    def get_absolute_url(self):
-        return reverse("player_detail", kwargs={"pk": self.player_id})
-    
     def attack_enemy(self, enemy):
         # Calculate the damage dealt by the player
         damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
@@ -67,6 +61,13 @@ class Player(models.Model):
         # Save the updated player and enemy objects to the database
         self.save()
         enemy.save()
+
+    def __str__(self):
+        return self.username
+
+    def get_absolute_url(self):
+        return reverse("player_detail", kwargs={"pk": self.player_id})
+
 
 
 class CharacterClass(models.Model):
@@ -100,6 +101,36 @@ class Enemy(models.Model):
         verbose_name = _("enemy")
         verbose_name_plural = _("enemies")
 
+    def attack_player(self, player):
+        # Calculate the damage dealt by the enemy
+        damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
+        modified_attack = self.attack + damage_range
+
+        # Ensure damage is non-negative
+        modified_attack = max(modified_attack, 0)
+
+        # Reduce the player's health based on the damage dealt
+        player.current_health -= modified_attack
+        player.current_health = max(player.current_health, 0)  # Ensure player health doesn't go below 0
+
+        # Check if the player is defeated
+        if player.current_health <= 0:
+            # Handle player defeat (e.g., reset player attributes, display game over message, etc.)
+            self.handle_player_defeat(player)
+
+        # Save the updated enemy and player objects to the database
+        self.save()
+        player.save()
+
+    def handle_player_defeat(self, player):
+        # Reset player attributes or perform any other necessary actions
+        player.current_health = 0
+        player.money = 0
+        # ... other attribute resets ...
+
+        # Save the updated player object to the database
+        player.save()
+
     def __str__(self):
         return self.name
 
@@ -126,3 +157,21 @@ class Location(models.Model):
     def get_absolute_url(self):
         return reverse("location_detail", kwargs={"pk": self.pk})
 
+class EnemyInstances(models.Model):
+    enemy = models.ForeignKey(
+        Enemy,
+        verbose_name=_("enemy"),
+        on_delete=models.CASCADE,
+        related_name="enemy"
+    )
+    
+
+    class Meta:
+        verbose_name = _("enemyInstances")
+        verbose_name_plural = _("enemyInstancess")
+
+    def __str__(self):
+        return self.enemy
+
+    def get_absolute_url(self):
+        return reverse("enemyInstances_detail", kwargs={"pk": self.pk})
