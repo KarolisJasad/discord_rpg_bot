@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Player, CharacterClass
+from rpgbot.models import Player, CharacterClass, Location
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 from urllib.parse import urlparse
@@ -88,6 +88,8 @@ class ClassMenu(commands.Cog):
         player.current_health = character_class.health
         player.attack = character_class.attack
         player.defense = character_class.defense
+        character_location = await sync_to_async(Location.objects.get)(name="TutorialArea")
+        player.location = character_location
 
         await sync_to_async(player.save)()
         role_name = selected_class

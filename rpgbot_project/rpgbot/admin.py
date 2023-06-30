@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Player, CharacterClass, Enemy
+from .models import Player, CharacterClass, Enemy, Location
 # Register your models here.
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('username', 'character_class', 'max_health', 'current_health', 'attack', 'defense', 'money')
+    list_display = ('username', 'character_class', 'max_health', 'current_health', 'attack', 'defense', 'money', 'location')
 
 @admin.register(CharacterClass)
 class CharacterClassAdmin(admin.ModelAdmin):
@@ -13,3 +13,12 @@ class CharacterClassAdmin(admin.ModelAdmin):
 @admin.register(Enemy)
 class EnemyAdmin(admin.ModelAdmin):
     list_display = ('name', 'max_health', 'current_health', 'attack', 'defense')
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'display_enemies')
+
+    def display_enemies(self, obj):
+        return ', '.join([enemy.name for enemy in obj.enemy.all()])
+
+    display_enemies.short_description = 'Enemies'

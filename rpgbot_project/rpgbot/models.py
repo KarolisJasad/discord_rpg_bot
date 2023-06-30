@@ -17,6 +17,14 @@ class Player(models.Model):
     current_health = models.IntegerField(_("current_health"), default=1)
     attack = models.IntegerField(_("attack"), default='0')
     defense = models.IntegerField(_("defense"), default='0')
+    location = models.ForeignKey(
+        "Location", 
+        verbose_name=_("location"), 
+        on_delete=models.CASCADE,
+        related_name='location',
+        blank=True,
+        null=True
+    )
     character_class = models.ForeignKey(
         "CharacterClass", 
         verbose_name=_("Character class"), 
@@ -70,3 +78,23 @@ class Enemy(models.Model):
 
     def get_absolute_url(self):
         return reverse("enemy_detail", kwargs={"pk": self.pk})
+
+class Location(models.Model):
+    name = models.CharField(_("name"), max_length=150, blank=True, null=True)
+    description = models.CharField(_("description"), max_length=1000, blank=True, null=True)
+    enemy = models.ManyToManyField(
+        Enemy, 
+        verbose_name=_("enemies"), 
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = _("location")
+        verbose_name_plural = _("locations")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("location_detail", kwargs={"pk": self.pk})
+
