@@ -53,14 +53,15 @@ class Player(models.Model):
         enemy.current_health -= modified_attack
         enemy.current_health = max(enemy.current_health, 0)  # Ensure enemy health doesn't go below 0
 
-        # Check if the enemy is defeated
-        if enemy.current_health <= 0:
-            # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
-            self.gain_experience(enemy.xp)  # Assuming you have a method to handle experience gain
+        # # Check if the enemy is defeated
+        # if enemy.current_health <= 0:
+        #     # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
+        #     self.gain_experience(enemy.xp)  # Assuming you have a method to handle experience gain
 
         # Save the updated player and enemy objects to the database
         self.save()
         enemy.save()
+        return modified_attack
 
     def __str__(self):
         return self.username
@@ -104,13 +105,13 @@ class Enemy(models.Model):
     def attack_player(self, player):
         # Calculate the damage dealt by the enemy
         damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
-        modified_attack = self.attack + damage_range
+        e_modified_attack = self.attack + damage_range
 
         # Ensure damage is non-negative
-        modified_attack = max(modified_attack, 0)
+        e_modified_attack = max(e_modified_attack, 0)
 
         # Reduce the player's health based on the damage dealt
-        player.current_health -= modified_attack
+        player.current_health -= e_modified_attack
         player.current_health = max(player.current_health, 0)  # Ensure player health doesn't go below 0
 
         # Check if the player is defeated
@@ -121,6 +122,7 @@ class Enemy(models.Model):
         # Save the updated enemy and player objects to the database
         self.save()
         player.save()
+        return e_modified_attack
 
     def handle_player_defeat(self, player):
         # Reset player attributes or perform any other necessary actions
