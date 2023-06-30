@@ -4,9 +4,8 @@ from utilities.gamebot import GameBot
 from rpgbot.models import Player, CharacterClass, Location
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
-from urllib.parse import urlparse
-from discord import CustomActivity
 
+player_id = None
 class ClassMenu(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
@@ -99,7 +98,7 @@ class ClassMenu(commands.Cog):
         await interaction.response.send_message(f"You have selected {selected_class} class.")
         await interaction.message.delete()
         introduction_cog = self.bot.get_cog("Introduction")
-        await introduction_cog.introduction(interaction.channel)
+        await introduction_cog.introduction(interaction)
     
 
 def setup(bot):
