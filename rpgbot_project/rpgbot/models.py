@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+import random
 
 CHARACTER_CLASSES = [
     ("Warrior", "Warrior"),
@@ -15,8 +16,8 @@ class Player(models.Model):
     money = models.IntegerField(_("money"), default=0)
     max_health = models.IntegerField(_("max_health"), default=1)
     current_health = models.IntegerField(_("current_health"), default=1)
-    attack = models.IntegerField(_("attack"), default='0')
-    defense = models.IntegerField(_("defense"), default='0')
+    attack = models.IntegerField(_("attack"), default=0)
+    defense = models.IntegerField(_("defense"), default=0)
     location = models.ForeignKey(
         "Location", 
         verbose_name=_("location"), 
@@ -33,7 +34,9 @@ class Player(models.Model):
         blank=True,
         null=True,
     )
-    
+    level = models.IntegerField(_("level"), default=1)
+    xp = models.IntegerField(_("experience"), default=0)
+
     class Meta:
         verbose_name = _("player")
         verbose_name_plural = _("players")
@@ -43,6 +46,28 @@ class Player(models.Model):
 
     def get_absolute_url(self):
         return reverse("player_detail", kwargs={"pk": self.player_id})
+    
+    def attack_enemy(self, enemy):
+        # Calculate the damage dealt by the player
+        damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
+        modified_attack = self.attack + damage_range
+
+        # Ensure damage is non-negative
+        modified_attack = max(modified_attack, 0)
+
+        # Reduce the enemy's health based on the damage dealt
+        enemy.current_health -= modified_attack
+        enemy.current_health = max(enemy.current_health, 0)  # Ensure enemy health doesn't go below 0
+
+        # Check if the enemy is defeated
+        if enemy.current_health <= 0:
+            # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
+            self.gain_experience(enemy.xp)  # Assuming you have a method to handle experience gain
+
+        # Save the updated player and enemy objects to the database
+        self.save()
+        enemy.save()
+
 
 class CharacterClass(models.Model):
     class_type = models.CharField(_("class_type"), max_length=50, choices=CHARACTER_CLASSES)
@@ -68,6 +93,8 @@ class Enemy(models.Model):
     attack = models.IntegerField(_("attack"), default=0)
     defense = models.IntegerField(_("defense"), default=0)
     image = models.ImageField(_("image"), upload_to="enemy_images", height_field=None, width_field=None, max_length=None, blank=True, null=True)
+    level = models.IntegerField(_("level"), default=1)
+    xp = models.IntegerField(_("experience"), default=10)
 
     class Meta:
         verbose_name = _("enemy")
@@ -78,6 +105,7 @@ class Enemy(models.Model):
 
     def get_absolute_url(self):
         return reverse("enemy_detail", kwargs={"pk": self.pk})
+
 
 class Location(models.Model):
     name = models.CharField(_("name"), max_length=150, blank=True, null=True)
