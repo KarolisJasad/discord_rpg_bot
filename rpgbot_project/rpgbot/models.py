@@ -57,24 +57,25 @@ class Player(models.Model):
             "rogue": {"max_health": 8, "attack": 5, "defense": 0},
             "mage": {"max_health": 5, "attack": 7, "defense": 0},
             # ... add more classes and their respective stat adjustments ...
-        }
+        }  
 
         # Check if the player's current XP is enough to reach the next level
-        for level, xp_requirement in xp_requirements.items():
-            if self.xp >= xp_requirement:
-                self.level = level
-                class_name = self.character_class.class_type.lower()
+        if self.xp >= xp_requirements.get(self.level, 0):
+            print(self.xp)
+            print(xp_requirements)
+            self.level += 1             
+            class_name = self.character_class.class_type.lower()
 
-                # Adjust stats based on the player's class
-                if class_name in class_stats:
-                    stats = class_stats[class_name]
-                    self.max_health += stats["max_health"]
-                    self.current_health = self.max_health
-                    self.attack += stats["attack"]
-                    self.defense += stats["defense"]
-
-        # Save the updated player object to the database
-        self.save()
+            # Adjust stats based on the player's class
+            if class_name in class_stats:
+                stats = class_stats[class_name]
+                self.max_health += stats["max_health"]
+                self.current_health = self.max_health
+                self.attack += stats["attack"]
+                self.defense += stats["defense"]
+            self.save()
+            return True  # Level increased
+        return False  # Level did not increase
 
     def attack_enemy(self, enemy):
         # Calculate the damage dealt by the player
@@ -91,6 +92,7 @@ class Player(models.Model):
         # # Check if the enemy is defeated
         if enemy.current_health <= 0:
             # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
+            self.money += enemy.gold
             self.xp += enemy.xp  # Assuming you have a method to handle experience gain
             self.increase_level()
         # Save the updated player and enemy objects to the database
@@ -131,6 +133,7 @@ class Enemy(models.Model):
     defense = models.IntegerField(_("defense"), default=0)
     image = models.ImageField(_("image"), upload_to="enemy_images", height_field=None, width_field=None, max_length=None, blank=True, null=True)
     level = models.IntegerField(_("level"), default=1)
+    gold = models.IntegerField(_("gold"), default=0)
     xp = models.IntegerField(_("experience"), default=10)
 
     class Meta:

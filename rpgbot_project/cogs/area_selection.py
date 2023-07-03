@@ -38,7 +38,6 @@ class AreaSelection(commands.Cog):
             elif interaction.data["custom_id"] == "next_button":
                 self.page_index = (self.page_index + 1) % len(location_embeds)
             elif interaction.data["custom_id"] == "select_button":
-                print("Selected button")
                 await self.forest_page_navigation(interaction)
 
             await interaction.message.edit(embed=location_embeds[self.page_index])
@@ -60,6 +59,11 @@ class AreaSelection(commands.Cog):
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         character_location = await sync_to_async(Location.objects.get)(name="Forest")
         player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location)
+        print(role)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
         await self.forest_rat_cog.encounter_rat(interaction)
 
 def setup(bot):

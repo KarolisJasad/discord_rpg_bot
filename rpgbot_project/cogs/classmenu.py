@@ -93,6 +93,7 @@ class ClassMenu(commands.Cog):
         await sync_to_async(player.save)()
         role_name = selected_class
         role = discord.utils.get(interaction.guild.roles, name=role_name)
+        print(role)
         if role:
             await interaction.user.add_roles(role)
         await interaction.response.send_message(f"You have selected {selected_class} class.")

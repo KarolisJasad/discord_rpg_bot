@@ -13,7 +13,7 @@ class ForestRat(commands.Cog):
     @commands.command()
     async def encounter_rat(self, interaction: discord.Interaction):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
-        enemy_rat = Enemy(name="Rat", max_health=50, current_health=50, attack=5, defense=2, level=1, xp=10)
+        enemy_rat = Enemy(name="Rat", max_health=50, current_health=50, attack=5, defense=2, level=1, gold=5, xp=10)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
 
@@ -33,7 +33,7 @@ class ForestRat(commands.Cog):
                 embed.add_field(name="Enemy Attack", value=f"{enemy_rat.name} attacks {player.username} and deals {enemy_attack} damage.", inline=False)
 
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
-                    victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_rat.name}, you've gained {enemy_rat.xp} exeprience!", color=discord.Color.green())
+                    victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_rat.name}, you've gained {enemy_rat.xp} exeprience and {enemy_rat.gold} gold!", color=discord.Color.green())
                     victory_embed.add_field(name="Journey continues", value=forest_location.victory_message)
                     victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
                     continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Continue", custom_id="continue_button")
