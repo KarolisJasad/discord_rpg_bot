@@ -38,8 +38,7 @@ class ForestRat(commands.Cog):
                     victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
                     continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Enter village", custom_id="continue_button")
                     victory_view = discord.ui.View()
-                    victory_view.add_item(continue_button)
-                    
+                    victory_view.add_item(continue_button)    
                 elif player.current_health <= 0 and enemy_rat.current_health > 0:
                     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_rat.name}!", color=discord.Color.red())
                     defeat_embed.add_field(name="Journey ended", value=forest_location.defeat_message)
@@ -48,9 +47,12 @@ class ForestRat(commands.Cog):
 
                 
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
+                    await button_interaction.response.edit_message(embed=embed)
                     await interaction.channel.send(embed=victory_embed, view=victory_view)
-                else:
+                elif player.current_health <= 0 and enemy_rat.current_health >= 0:
                     await interaction.channel.send(embed=defeat_embed)
+                else:
+                    await button_interaction.response.edit_message(embed=embed)
 
         # Create the attack button
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
