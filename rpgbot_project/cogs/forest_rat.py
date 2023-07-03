@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from rpgbot.models import Enemy, Player
+from rpgbot.models import Enemy, Player, Location
 import random
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
@@ -12,6 +12,7 @@ class ForestRat(commands.Cog):
 
     @commands.command()
     async def encounter_rat(self, interaction: discord.Interaction):
+        forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         enemy_rat = Enemy(name="Rat", max_health=50, current_health=50, attack=5, defense=2, level=1, xp=10)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
@@ -24,17 +25,31 @@ class ForestRat(commands.Cog):
                 # Player's attack logic goes here
                 enemy_attack = await sync_to_async(enemy_rat.attack_player)(player)
                 player_attack = await sync_to_async(player.attack_enemy)(enemy_rat)
-                
+
                 embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
                 embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
                 embed.add_field(name=enemy_rat.name, value=f":heart: **HP**: {enemy_rat.current_health}/{enemy_rat.max_health}\n:crossed_swords: **ATTACK**: {enemy_rat.attack}\n:shield: **DEFENCE**: {enemy_rat.defense}", inline=True)
                 embed.add_field(name="Player Attack", value=f"{player.username} attacks {enemy_rat.name} and deals {player_attack} damage.", inline=False)
                 embed.add_field(name="Enemy Attack", value=f"{enemy_rat.name} attacks {player.username} and deals {enemy_attack} damage.", inline=False)
 
+                if player.current_health > 0 and enemy_rat.current_health <= 0:
+                    victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_rat.name}!", color=discord.Color.green())
+                    victory_embed.add_field(name="Journey continues", value=forest_location.victory_message)
+                    victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
+                    continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Continue", custom_id="continue_button")
+                    view.add_item(continue_button)
+                    await interaction.channel.send(embed=victory_embed)
+                elif player.current_health <= 0 and enemy_rat.current_health > 0:
+                    defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_rat.name}!", color=discord.Color.red())
+                    await interaction.channel.send(embed=defeat_embed)
+
                 await button_interaction.response.edit_message(embed=embed)
-        
+                
+
         # Create the attack button
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
+        attack_button.callback = attack_button_callback
+
         view = discord.ui.View()
         view.add_item(attack_button)
 
@@ -46,25 +61,12 @@ class ForestRat(commands.Cog):
 
         message = await interaction.channel.send(embed=embed, view=view)
 
+        # Wait for the button click event or timeout after 180 seconds
         try:
-            button_interaction = await self.bot.wait_for("button_click", check=check_author, timeout=180.0)
-            if button_interaction.component.custom_id == "attack_button":
-                await attack_button_callback(button_interaction)
-            else:
-                # Handle other buttons if needed
-                pass
+            await asyncio.wait_for(view.wait(), timeout=180.0)
         except asyncio.TimeoutError:
-            pass
-
-        if player.current_health > 0:
-            victory_embed = discord.Embed(title="Victory!", description=f"You have defeated the {enemy_rat.name}.", color=discord.Color.green())
-            await interaction.channel.send(embed=victory_embed)
-        else:
-            defeat_embed = discord.Embed(title="Defeat!", description="You were defeated in battle. Better luck next time!", color=discord.Color.red())
-            await interaction.channel.send(embed=defeat_embed)
-
-        await message.delete()
-
+            await interaction.channel.send("Battle timeout. You took too long to respond.")
+            return
 
 def setup(bot):
     bot.add_cog(ForestRat(bot))

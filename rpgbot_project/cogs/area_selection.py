@@ -1,8 +1,9 @@
 from discord.ext import commands
 import discord
 from utilities.gamebot import GameBot
-from rpgbot.models import Location
+from rpgbot.models import Location, Player
 from asgiref.sync import sync_to_async
+from django.shortcuts import get_object_or_404
 
 
 class AreaSelection(commands.Cog):
@@ -55,6 +56,10 @@ class AreaSelection(commands.Cog):
     async def page_navigation(self, interaction):
         await interaction.message.delete()
         await interaction.channel.send(f"You have selected Forest")
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        player.location = character_location
         await self.forest_rat_cog.encounter_rat(interaction)
 
 def setup(bot):

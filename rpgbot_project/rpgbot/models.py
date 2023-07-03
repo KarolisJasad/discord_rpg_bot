@@ -148,6 +148,7 @@ class Location(models.Model):
         verbose_name=_("enemies"), 
         blank=True,
     )
+    victory_message = models.CharField(_("victory_message"), max_length=2000, blank=True, null=True)
 
     class Meta:
         verbose_name = _("location")
