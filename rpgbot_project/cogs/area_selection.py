@@ -5,17 +5,17 @@ from rpgbot.models import Location
 from asgiref.sync import sync_to_async
 
 
-player_id = None
 class AreaSelection(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
         self.page_index = 0  # Initialize the page_index variable to 0
         self.previous_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Previous", custom_id="previous_button")
         self.next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label="Next", custom_id="next_button")
-        self.select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Location", custom_id="select_location")
+        self.select_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Select Location", custom_id="select_button")
+        self.forest_rat_cog = None
 
     @commands.command()
-    async def areaselection(self, channel):
+    async def areaselection(self, ctx):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         cave_location = await sync_to_async(Location.objects.get)(name="Cave")
         forest_page = discord.Embed(title=forest_location.name, color=discord.Color.blue())
@@ -34,13 +34,11 @@ class AreaSelection(commands.Cog):
             if interaction.data["custom_id"] == "previous_button":
                 self.page_index = (self.page_index - 1) % len(location_embeds)
                 print(self.page_index)
-                await interaction.response.defer()
             elif interaction.data["custom_id"] == "next_button":
                 self.page_index = (self.page_index + 1) % len(location_embeds)
-                await interaction.response.defer()
             elif interaction.data["custom_id"] == "select_button":
                 print("Selected button")
-                await interaction.response.defer()
+                await self.page_navigation(interaction)
 
             await interaction.message.edit(embed=location_embeds[self.page_index])
 
@@ -51,8 +49,13 @@ class AreaSelection(commands.Cog):
         location_selection_view.add_item(self.previous_button)
         location_selection_view.add_item(self.next_button)
         location_selection_view.add_item(self.select_button)
-        await channel.send(embed=location_embeds[self.page_index], view=location_selection_view)
+        self.forest_rat_cog = self.bot.get_cog("ForestRat")
+        await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
 
+    async def page_navigation(self, interaction):
+        await interaction.message.delete()
+        await interaction.channel.send(f"You have selected Forest")
+        await self.forest_rat_cog.encounter_rat(interaction)
 
 def setup(bot):
     bot.add_cog(AreaSelection(bot))
