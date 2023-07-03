@@ -36,17 +36,21 @@ class ForestRat(commands.Cog):
                     victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_rat.name}, you've gained {enemy_rat.xp} exeprience and {enemy_rat.gold} gold!", color=discord.Color.green())
                     victory_embed.add_field(name="Journey continues", value=forest_location.victory_message)
                     victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
-                    continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Continue", custom_id="continue_button")
-                    view.add_item(continue_button)
-                    await interaction.channel.send(embed=victory_embed)
+                    continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Enter village", custom_id="continue_button")
+                    victory_view = discord.ui.View()
+                    victory_view.add_item(continue_button)
+                    
                 elif player.current_health <= 0 and enemy_rat.current_health > 0:
                     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_rat.name}!", color=discord.Color.red())
                     defeat_embed.add_field(name="Journey ended", value=forest_location.defeat_message)
                     defeat_embed.set_image(url="https://i.imgur.com/ZTgj0so.jpg")
-                    await interaction.channel.send(embed=defeat_embed)
-
-                await button_interaction.response.edit_message(embed=embed)
                 
+
+                
+                if player.current_health > 0 and enemy_rat.current_health <= 0:
+                    await interaction.channel.send(embed=victory_embed, view=victory_view)
+                else:
+                    await interaction.channel.send(embed=defeat_embed)
 
         # Create the attack button
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
