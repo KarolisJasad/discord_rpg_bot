@@ -41,6 +41,41 @@ class Player(models.Model):
         verbose_name = _("player")
         verbose_name_plural = _("players")
 
+    def increase_level(self):
+        # Define the XP required for each level in a dictionary
+        xp_requirements = {
+            1: 100,
+            2: 250,
+            3: 450,
+            4: 700,
+            5: 1000,
+            # ... add more levels and XP requirements ...
+        }
+
+        class_stats = {
+            "warrior": {"max_health": 10, "attack": 2, "defense": 1},
+            "rogue": {"max_health": 8, "attack": 5, "defense": 0},
+            "mage": {"max_health": 5, "attack": 7, "defense": 0},
+            # ... add more classes and their respective stat adjustments ...
+        }
+
+        # Check if the player's current XP is enough to reach the next level
+        for level, xp_requirement in xp_requirements.items():
+            if self.xp >= xp_requirement:
+                self.level = level
+                class_name = self.character_class.class_type.lower()
+
+                # Adjust stats based on the player's class
+                if class_name in class_stats:
+                    stats = class_stats[class_name]
+                    self.max_health += stats["max_health"]
+                    self.current_health = self.max_health
+                    self.attack += stats["attack"]
+                    self.defense += stats["defense"]
+
+        # Save the updated player object to the database
+        self.save()
+
     def attack_enemy(self, enemy):
         # Calculate the damage dealt by the player
         damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
@@ -57,7 +92,7 @@ class Player(models.Model):
         if enemy.current_health <= 0:
             # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
             self.xp += enemy.xp  # Assuming you have a method to handle experience gain
-
+            self.increase_level()
         # Save the updated player and enemy objects to the database
         self.save()
         enemy.save()
