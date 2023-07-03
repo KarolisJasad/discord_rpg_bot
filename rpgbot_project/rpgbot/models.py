@@ -61,8 +61,6 @@ class Player(models.Model):
 
         # Check if the player's current XP is enough to reach the next level
         if self.xp >= xp_requirements.get(self.level, 0):
-            print(self.xp)
-            print(xp_requirements)
             self.level += 1             
             class_name = self.character_class.class_type.lower()
 

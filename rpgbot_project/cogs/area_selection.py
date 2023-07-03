@@ -59,8 +59,7 @@ class AreaSelection(commands.Cog):
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         character_location = await sync_to_async(Location.objects.get)(name="Forest")
         player.location = character_location
-        role = discord.utils.get(interaction.guild.roles, name=player.location)
-        print(role)
+        role = discord.utils.get(interaction.guild.roles, name="Forest")
         if role:
             await interaction.user.add_roles(role)
         await sync_to_async(player.save)()
