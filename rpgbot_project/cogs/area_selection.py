@@ -39,7 +39,7 @@ class AreaSelection(commands.Cog):
                 self.page_index = (self.page_index + 1) % len(location_embeds)
             elif interaction.data["custom_id"] == "select_button":
                 print("Selected button")
-                await self.page_navigation(interaction)
+                await self.forest_page_navigation(interaction)
 
             await interaction.message.edit(embed=location_embeds[self.page_index])
 
@@ -53,7 +53,7 @@ class AreaSelection(commands.Cog):
         self.forest_rat_cog = self.bot.get_cog("ForestRat")
         await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
 
-    async def page_navigation(self, interaction):
+    async def forest_page_navigation(self, interaction):
         await interaction.message.delete()
         await interaction.channel.send(f"You have selected Forest")
         player_id = str(interaction.user.id)
