@@ -41,6 +41,8 @@ class ForestRat(commands.Cog):
                     await interaction.channel.send(embed=victory_embed)
                 elif player.current_health <= 0 and enemy_rat.current_health > 0:
                     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_rat.name}!", color=discord.Color.red())
+                    defeat_embed.add_field(name="Journey ended", value=forest_location.defeat_message)
+                    defeat_embed.set_image(url="https://i.imgur.com/ZTgj0so.jpg")
                     await interaction.channel.send(embed=defeat_embed)
 
                 await button_interaction.response.edit_message(embed=embed)

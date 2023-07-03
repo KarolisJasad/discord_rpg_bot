@@ -126,8 +126,7 @@ class Enemy(models.Model):
 
     def handle_player_defeat(self, player):
         # Reset player attributes or perform any other necessary actions
-        player.current_health = 0
-        player.money = 0
+        player.delete()
         # ... other attribute resets ...
 
         # Save the updated player object to the database
@@ -149,6 +148,7 @@ class Location(models.Model):
         blank=True,
     )
     victory_message = models.CharField(_("victory_message"), max_length=2000, blank=True, null=True)
+    defeat_message = models.CharField(_("defeat_message"), max_length=2000, blank=True, null=True)
 
     class Meta:
         verbose_name = _("location")
