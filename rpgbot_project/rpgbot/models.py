@@ -54,9 +54,9 @@ class Player(models.Model):
         enemy.current_health = max(enemy.current_health, 0)  # Ensure enemy health doesn't go below 0
 
         # # Check if the enemy is defeated
-        # if enemy.current_health <= 0:
-        #     # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
-        #     self.gain_experience(enemy.xp)  # Assuming you have a method to handle experience gain
+        if enemy.current_health <= 0:
+            # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
+            self.xp += enemy.xp  # Assuming you have a method to handle experience gain
 
         # Save the updated player and enemy objects to the database
         self.save()
