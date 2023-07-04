@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Player, CharacterClass, Enemy, Location
+from .models import Player, CharacterClass, Enemy, Location, Item
 # Register your models here.
 
 @admin.register(Player)
@@ -22,3 +22,7 @@ class LocationAdmin(admin.ModelAdmin):
         return ', '.join([enemy.name for enemy in obj.enemy.all()])
 
     display_enemies.short_description = 'Enemies'
+
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'attack', 'defense', 'health')

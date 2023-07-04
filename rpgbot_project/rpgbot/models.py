@@ -187,11 +187,12 @@ class Item(models.Model):
     ]
 
     name = models.CharField(_("name"), max_length=100)
-    description = models.TextField(_("description"))
+    description = models.TextField(_("description"), blank=True, null=True)
     type = models.CharField(_("type"), max_length=50, choices=ITEM_TYPES)
     attack = models.IntegerField(_("attack"), default=0)
     defense = models.IntegerField(_("defense"), default=0)
     health = models.IntegerField(_("health"), default=0)
+    special_attributes = models.JSONField(_("speccial_attributes"), default=dict, blank=True, null=True)
     
 
     class Meta:
