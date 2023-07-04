@@ -14,8 +14,15 @@ class UsernameEntry(commands.Cog):
         def check_author(m):
             return m.author == ctx.author
 
-        player_exists = await sync_to_async(Player.objects.filter(player_id=ctx.author.id).exists)()
-        if player_exists:
+        player = await sync_to_async(Player.objects.filter(player_id=ctx.author.id).exists)()
+        overwrites = {
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.author: discord.PermissionOverwrite(read_messages=True)
+        }
+        channel = await ctx.guild.create_text_channel('rpg-channel', overwrites=overwrites)
+        def check(message):
+            return message.channel == ctx.channel and not message.author.bot
+        if player:
             # Player entry exists, proceed to the class menu
             class_menu_command = self.bot.get_command("classmenu")
             await ctx.invoke(class_menu_command)

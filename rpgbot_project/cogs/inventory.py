@@ -17,10 +17,12 @@ class Inventory(commands.Cog):
         inventory_items = await sync_to_async(player.get_inventory_items)()
 
 
+        inventory_page = discord.Embed(title="Inventory", color=discord.Color.dark_green())
         inventory_page = discord.Embed(title="Equipped items", color=discord.Color.dark_green())
         for item in equipped_items:
             inventory_page.add_field(name=item.type, value=item.name)
         inventory_embed = inventory_page
+        inventory_page = discord.Embed(title="Equipped items", color=discord.Color.dark_green())
         inventory = discord.ui.View()
         await interaction.followup.send(embed=inventory_embed, view=inventory)
 
