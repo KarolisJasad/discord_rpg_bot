@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import random
+from django.contrib.postgres.fields import JSONField
 
 CHARACTER_CLASSES = [
     ("Warrior", "Warrior"),
@@ -18,6 +19,8 @@ class Player(models.Model):
     current_health = models.IntegerField(_("current_health"), default=1)
     attack = models.IntegerField(_("attack"), default=0)
     defense = models.IntegerField(_("defense"), default=0)
+    level = models.IntegerField(_("level"), default=1)
+    xp = models.IntegerField(_("experience"), default=0)
     location = models.ForeignKey(
         "Location", 
         verbose_name=_("location"), 
@@ -34,8 +37,68 @@ class Player(models.Model):
         blank=True,
         null=True,
     )
-    level = models.IntegerField(_("level"), default=1)
-    xp = models.IntegerField(_("experience"), default=0)
+    inventory = models.ManyToManyField(
+        "Item",
+        verbose_name=_("inventory"),
+        related_name="inventory",
+        blank=True
+    )
+    equipped_weapon = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_weapon"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_weapon",
+        blank=True,
+        null=True
+    )
+    equipped_body_armour = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_body_armour"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_body_armour",
+        blank=True,
+        null=True
+    )
+    equipped_helmet = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_helmet"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_helmet",
+        blank=True,
+        null=True
+    )
+    equipped_leg_armor = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_leg_armor"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_leg_armor",
+        blank=True,
+        null=True
+    )
+    equipped_ring1 = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_ring1"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_ring1",
+        blank=True,
+        null=True
+    )
+    equipped_ring2 = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_ring2"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_ring2",
+        blank=True,
+        null=True
+    )
+    equipped_amulet = models.ForeignKey(
+        "Item",
+        verbose_name=_("equipped_amulet"),
+        on_delete=models.SET_NULL,
+        related_name="equipped_amulet",
+        blank=True,
+        null=True
+    )
 
     class Meta:
         verbose_name = _("player")
@@ -103,6 +166,43 @@ class Player(models.Model):
 
     def get_absolute_url(self):
         return reverse("player_detail", kwargs={"pk": self.player_id})
+
+class Item(models.Model):
+    WEAPON = "Weapon"
+    BODY_ARMOR = "Body Armor"
+    HELMET = "Helmet"
+    LEG_ARMOR = "Leg Armor"
+    RING = "Ring"
+    AMULET = "Amulet"
+    MISC = "Misc"
+
+    ITEM_TYPES = [
+        (WEAPON, _("Weapon")),
+        (BODY_ARMOR, _("Body Armor")),
+        (HELMET, _("Helmet")),
+        (LEG_ARMOR, _("Leg Armor")),
+        (RING, _("Ring")),
+        (AMULET, _("Amulet")),
+        (MISC, _("Misc")),
+    ]
+
+    name = models.CharField(_("name"), max_length=100)
+    description = models.TextField(_("description"))
+    type = models.CharField(_("type"), max_length=50, choices=ITEM_TYPES)
+    attack = models.IntegerField(_("attack"), default=0)
+    defense = models.IntegerField(_("defense"), default=0)
+    health = models.IntegerField(_("health"), default=0)
+    
+
+    class Meta:
+        verbose_name = _("item")
+        verbose_name_plural = _("items")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("item_detail", kwargs={"pk": self.pk})
 
 
 
