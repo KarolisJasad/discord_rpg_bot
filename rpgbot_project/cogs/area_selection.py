@@ -30,11 +30,7 @@ class AreaSelection(commands.Cog):
         cave_page.add_field(name="Description", value=cave_location.description)
         cave_page.set_image(url="https://i.imgur.com/kcMI7hi.jpg")
 
-        village_page = discord.Embed(title=village_location.name, color=discord.Color.blue())
-        village_page.add_field(name="Description", value=village_location.description)
-        village_page.set_image(url="https://i.imgur.com/ciYuIoa.jpg")
-
-        location_embeds = [forest_page, cave_page, village_page]
+        location_embeds = [forest_page, cave_page]
 
         location_selection_view = discord.ui.View()
 
