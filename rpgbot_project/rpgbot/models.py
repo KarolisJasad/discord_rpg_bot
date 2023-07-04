@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import random
+from asgiref.sync import sync_to_async
 from django.contrib.postgres.fields import JSONField
 
 CHARACTER_CLASSES = [
@@ -121,6 +122,10 @@ class Player(models.Model):
         if self.equipped_amulet:
             equipped_items.append(self.equipped_amulet)
         return equipped_items
+    
+    @sync_to_async
+    def get_inventory_items(self):
+        return self.inventory.all()
 
     def increase_level(self):
         # Define the XP required for each level in a dictionary

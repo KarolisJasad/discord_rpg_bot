@@ -44,11 +44,15 @@ class ForestRat(commands.Cog):
                     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_rat.name}!", color=discord.Color.red())
                     defeat_embed.add_field(name="Journey ended", value=forest_location.defeat_message)
                     defeat_embed.set_image(url="https://i.imgur.com/ZTgj0so.jpg")
+                    roles_to_remove = ["Forest", "Village", "Cave", "Warrior", "Mage", "Rogue"]
+                    roles = [discord.utils.get(button_interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+                    roles = [role for role in roles if role is not None]  # Filter out None values
+                    if roles:
+                        await button_interaction.user.remove_roles(*roles)
+                    await interaction.channel.send(embed=defeat_embed)
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
                     await button_interaction.response.edit_message(embed=embed)
                     await interaction.channel.send(embed=victory_embed, view=victory_view)
-                elif player.current_health <= 0 and enemy_rat.current_health >= 0:
-                    await interaction.channel.send(embed=defeat_embed)
                 else:
                     await button_interaction.response.edit_message(embed=embed)
         
