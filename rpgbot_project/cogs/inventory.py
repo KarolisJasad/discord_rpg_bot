@@ -17,8 +17,7 @@ class Inventory(commands.Cog):
         inventory_page = discord.Embed(title="Inventory", color=discord.Color.dark_green())
         equipped_items = await sync_to_async(player.get_equipped_items)()
         print(equipped_items)
-        inventory_items = player.get_inventory_items()
-        print(inventory_items)
+        inventory_items = await sync_to_async(player.get_inventory_items)()
 
 def setup(bot):
     bot.add_cog(Inventory(bot))

@@ -123,7 +123,6 @@ class Player(models.Model):
             equipped_items.append(self.equipped_amulet)
         return equipped_items
     
-    @sync_to_async
     def get_inventory_items(self):
         return self.inventory.all()
 
