@@ -50,8 +50,7 @@ class CaveTroll(commands.Cog):
                         await button_interaction.user.remove_roles(*roles)
                     await interaction.channel.send(embed=defeat_embed)
 
-                await button_interaction.response.edit_message(embed=embed)
-                
+                await button_interaction.response.edit_message(embed=embed)     
 
         # Create the attack button
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
