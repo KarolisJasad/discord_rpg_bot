@@ -5,11 +5,11 @@ from discord.ext import commands
 from utilities.gamebot import GameBot
 from cogs.classmenu import ClassMenu
 from cogs.startrpg import UsernameEntry
-from cogs.pve import Pve
 from cogs.introduction import Introduction
 from cogs.area_selection import AreaSelection
 from cogs.forest_rat import ForestRat
 from cogs.cave_troll import CaveTroll
+from cogs.village import Village
 
 
 load_dotenv()
@@ -24,11 +24,11 @@ intents.message_content = True
 init_cogs = [
     "cogs.classmenu",
     "cogs.startrpg",
-    "cogs.pve",
     "cogs.introduction",
     "cogs.area_selection"
     "cogs.forest_rat"
     "cogs.cave_troll"
+    "cogs.village"
 ]
 
 bot = GameBot(init_cogs)
@@ -38,11 +38,11 @@ async def on_ready():
     print("Bot is online.")
     await bot.add_cog(ClassMenu(bot)) 
     await bot.add_cog(UsernameEntry(bot))
-    await bot.add_cog(Pve(bot))
     await bot.add_cog(Introduction(bot))
     await bot.add_cog(AreaSelection(bot))
     await bot.add_cog(ForestRat(bot))
     await bot.add_cog(CaveTroll(bot))
+    await bot.add_cog(Village(bot))
 
 # Add the ClassMenu cog to the bot
 bot.run(TOKEN)
