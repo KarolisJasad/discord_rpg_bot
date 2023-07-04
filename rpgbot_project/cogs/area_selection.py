@@ -20,6 +20,8 @@ class AreaSelection(commands.Cog):
     async def areaselection(self, ctx):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         cave_location = await sync_to_async(Location.objects.get)(name="Cave")
+        village_location = await sync_to_async(Location.objects.get)(name="Village")
+
         forest_page = discord.Embed(title=forest_location.name, color=discord.Color.blue())
         forest_page.add_field(name="Description", value=forest_location.description)
         forest_page.set_image(url="https://i.imgur.com/ogmBOx9.jpg")
@@ -28,7 +30,11 @@ class AreaSelection(commands.Cog):
         cave_page.add_field(name="Description", value=cave_location.description)
         cave_page.set_image(url="https://i.imgur.com/kcMI7hi.jpg")
 
-        location_embeds = [forest_page, cave_page]
+        village_page = discord.Embed(title=village_location.name, color=discord.Color.blue())
+        village_page.add_field(name="Description", value=village_location.description)
+        village_page.set_image(url="https://i.imgur.com/ciYuIoa.jpg")
+
+        location_embeds = [forest_page, cave_page, village_page]
 
         location_selection_view = discord.ui.View()
 
@@ -54,6 +60,7 @@ class AreaSelection(commands.Cog):
 
         self.forest_rat_cog = self.bot.get_cog("ForestRat")
         self.cave_troll_cog = self.bot.get_cog("CaveTroll")
+        self.village_cog = self.bot.get_cog("Village")
         
         await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
 

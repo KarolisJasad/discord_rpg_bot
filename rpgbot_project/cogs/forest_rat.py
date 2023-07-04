@@ -38,14 +38,12 @@ class ForestRat(commands.Cog):
                     victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
                     continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Enter village", custom_id="continue_button")
                     victory_view = discord.ui.View()
-                    victory_view.add_item(continue_button)    
+                    victory_view.add_item(continue_button)  
+                    continue_button.callback = continue_button_click  
                 elif player.current_health <= 0 and enemy_rat.current_health > 0:
                     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_rat.name}!", color=discord.Color.red())
                     defeat_embed.add_field(name="Journey ended", value=forest_location.defeat_message)
                     defeat_embed.set_image(url="https://i.imgur.com/ZTgj0so.jpg")
-                
-
-                
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
                     await button_interaction.response.edit_message(embed=embed)
                     await interaction.channel.send(embed=victory_embed, view=victory_view)
@@ -53,7 +51,20 @@ class ForestRat(commands.Cog):
                     await interaction.channel.send(embed=defeat_embed)
                 else:
                     await button_interaction.response.edit_message(embed=embed)
-
+        
+        async def continue_button_click(interaction: discord.Interaction):
+            if interaction.data["custom_id"] == "continue_button":
+                role = discord.utils.get(interaction.user.guild.roles, name="Forest")
+                if role:
+                    await interaction.user.remove_roles(role)
+                role = discord.utils.get(interaction.user.guild.roles, name="Village")
+                if role:
+                    await interaction.user.add_roles(role)
+                await interaction.response.defer()
+                village_cog = self.bot.get_cog("Village")
+                await village_cog.enter_village(interaction)
+                
+                        
         # Create the attack button
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
         attack_button.callback = attack_button_callback
