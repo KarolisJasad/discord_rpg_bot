@@ -104,6 +104,24 @@ class Player(models.Model):
         verbose_name = _("player")
         verbose_name_plural = _("players")
 
+    def get_equipped_items(self):
+        equipped_items = []
+        if self.equipped_weapon:
+            equipped_items.append(self.equipped_weapon)
+        if self.equipped_body_armour:
+            equipped_items.append(self.equipped_body_armour)
+        if self.equipped_helmet:
+            equipped_items.append(self.equipped_helmet)
+        if self.equipped_leg_armor:
+            equipped_items.append(self.equipped_leg_armor)
+        if self.equipped_ring1:
+            equipped_items.append(self.equipped_ring1)
+        if self.equipped_ring2:
+            equipped_items.append(self.equipped_ring2)
+        if self.equipped_amulet:
+            equipped_items.append(self.equipped_amulet)
+        return equipped_items
+
     def increase_level(self):
         # Define the XP required for each level in a dictionary
         xp_requirements = {

@@ -11,7 +11,12 @@ class Inventory(commands.Cog):
     
     @commands.command()
     async def open_inventory(self, interaction: discord.Interaction):
-        pass
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        
+        inventory_page = discord.Embed(title="Inventory", color=discord.Color.dark_green())
+        equipped_items = await sync_to_async(player.get_equipped_items)()
+        print(equipped_items)
 
 def setup(bot):
     bot.add_cog(Inventory(bot))
