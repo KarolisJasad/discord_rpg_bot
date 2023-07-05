@@ -37,7 +37,7 @@ bot = GameBot(init_cogs)
 
 @bot.event
 async def on_ready():
-    print("Bot is online.")
+    print("Bot is online.TT")
     await bot.add_cog(ClassMenu(bot)) 
     await bot.add_cog(UsernameEntry(bot))
     await bot.add_cog(Introduction(bot))
@@ -46,6 +46,8 @@ async def on_ready():
     await bot.add_cog(CaveTroll(bot))
     await bot.add_cog(Village(bot))
     await bot.add_cog(Inventory(bot))
+
+
 
 # Add the ClassMenu cog to the bot
 bot.run(TOKEN)

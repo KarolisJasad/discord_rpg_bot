@@ -5,6 +5,7 @@ import random
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 import asyncio
+from utilities.levelup_embed import handle_level_up
 
 class ForestRat(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -26,12 +27,13 @@ class ForestRat(commands.Cog):
                 enemy_attack = await sync_to_async(enemy_rat.attack_player)(player)
                 player_attack = await sync_to_async(player.attack_enemy)(enemy_rat)
 
+                await handle_level_up(player, button_interaction.channel)
+
                 embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
                 embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
                 embed.add_field(name=enemy_rat.name, value=f":heart: **HP**: {enemy_rat.current_health}/{enemy_rat.max_health}\n:crossed_swords: **ATTACK**: {enemy_rat.attack}\n:shield: **DEFENCE**: {enemy_rat.defense}", inline=True)
                 embed.add_field(name="Player Attack", value=f"{player.username} attacks {enemy_rat.name} and deals {player_attack} damage.", inline=False)
                 embed.add_field(name="Enemy Attack", value=f"{enemy_rat.name} attacks {player.username} and deals {enemy_attack} damage.", inline=False)
-
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
                     victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_rat.name}, you've gained {enemy_rat.xp} exeprience and {enemy_rat.gold} gold!", color=discord.Color.green())
                     victory_embed.add_field(name="Journey continues", value=forest_location.victory_message)
