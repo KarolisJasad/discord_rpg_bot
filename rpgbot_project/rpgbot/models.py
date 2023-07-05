@@ -4,6 +4,13 @@ from django.urls import reverse
 import random
 from asgiref.sync import sync_to_async
 from django.contrib.postgres.fields import JSONField
+import discord
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+GUILD = os.getenv('DISCORD_GUILD')
 
 CHARACTER_CLASSES = [
     ("Warrior", "Warrior"),
@@ -142,12 +149,16 @@ class Player(models.Model):
             "rogue": {"max_health": 8, "attack": 5, "defense": 0},
             "mage": {"max_health": 5, "attack": 7, "defense": 0},
             # ... add more classes and their respective stat adjustments ...
-        }  
+        }
 
         # Check if the player's current XP is enough to reach the next level
         if self.xp >= xp_requirements.get(self.level, 0):
-            self.level += 1             
+            self.level += 1
             class_name = self.character_class.class_type.lower()
+            # Get the previous stats before the level increase
+            previous_health = self.max_health
+            previous_attack = self.attack
+            previous_defense = self.defense
 
             # Adjust stats based on the player's class
             if class_name in class_stats:
@@ -157,8 +168,33 @@ class Player(models.Model):
                 self.attack += stats["attack"]
                 self.defense += stats["defense"]
             self.save()
+
+            # Create an embedded message with previous and updated stats
+            embed = discord.Embed(title="Level Up!", color=discord.Color.green())
+            embed.add_field(name="Player", value=self.username)
+            embed.add_field(name="Previous Stats", value=f"\n:heart: **HP**: {previous_health}\n:crossed_swords: **ATTACK**: {previous_attack}\n:shield: **DEFENSE**: {previous_defense}", inline=False)
+            embed.add_field(name="Updated Stats", value=f"\n:heart: **HP**: {self.max_health}\n:crossed_swords: **ATTACK**: {self.attack}\n:shield: **DEFENSE**: {self.defense}", inline=False)
+
+            # Create a Discord client
+            intents = discord.Intents.default()
+            intents.typing = False
+            intents.presences = False
+            client = discord.Client(intents=intents)
+
+            @client.event
+            async def on_ready():
+                # Find the channel to send the message
+                user = self.username
+                message_content = f"{user.username} has leveled up!"
+                await user.send(content=message_content, embed=embed)
+
+            # Run the Discord client
+            client.run(TOKEN)
+
             return True  # Level increased
-        return False  # Level did not increase
+
+        return False, None  # Level did not increase
+
 
     def attack_enemy(self, enemy):
         # Calculate the damage dealt by the player

@@ -53,6 +53,8 @@ class ForestRat(commands.Cog):
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
                     await button_interaction.response.edit_message(embed=embed)
                     await interaction.channel.send(embed=victory_embed, view=victory_view)
+                    await message.delete()
+
                 else:
                     await button_interaction.response.edit_message(embed=embed)
         
@@ -81,6 +83,7 @@ class ForestRat(commands.Cog):
         embed.add_field(name=enemy_rat.name, value=f":heart: **HP**: {enemy_rat.current_health}/{enemy_rat.max_health}\n:crossed_swords: **ATTACK**: {enemy_rat.attack}\n:shield: **DEFENCE**: {enemy_rat.defense}", inline=True)
         embed.add_field(name="Player Attack", value="Waiting for your next move...", inline=False)
         embed.add_field(name="Enemy Attack", value="Responding to your action", inline=False)
+
 
         message = await interaction.channel.send(embed=embed, view=view)
 
