@@ -11,6 +11,7 @@ from cogs.forest_rat import ForestRat
 from cogs.cave_troll import CaveTroll
 from cogs.village import Village
 from cogs.inventory import Inventory
+from cogs.profile import Profile
 
 
 load_dotenv()
@@ -31,6 +32,7 @@ init_cogs = [
     "cogs.cave_troll"
     "cogs.village"
     "cogs.inventory"
+    "cogs.profile"
 ]
 
 bot = GameBot(init_cogs)
@@ -46,8 +48,7 @@ async def on_ready():
     await bot.add_cog(CaveTroll(bot))
     await bot.add_cog(Village(bot))
     await bot.add_cog(Inventory(bot))
-
-
+    await bot.add_cog(Profile(bot))
 
 # Add the ClassMenu cog to the bot
 bot.run(TOKEN)

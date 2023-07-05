@@ -20,12 +20,12 @@ class Village(commands.Cog):
         location_embed = village_page
 
         village = discord.ui.View()
-        inventory_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Inventory", custom_id="inventory_button")
-        inventory_button.callback = self.on_inventory_button_click
         shop_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Visit Shop", custom_id="shop_button")
         shop_button.callback = self.on_shop_button_click
-        village.add_item(inventory_button)
+        profile_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Profile", custom_id="profile_button")
+        profile_button.callback = self.on_profile_button_click
         village.add_item(shop_button)
+        village.add_item(profile_button)
 
 
         await interaction.followup.send(embed=location_embed, view=village)
@@ -34,11 +34,11 @@ class Village(commands.Cog):
         self.shop_cog = self.bot.get_cog("ShopCog")
         await interaction.response.defer()
         await self.shop_cog.open_shop(interaction)
-
-    async def on_inventory_button_click(self, interaction: discord.Interaction):
-        self.inventory_cog = self.bot.get_cog("Inventory")
+    
+    async def on_profile_button_click(self, interaction: discord.Interaction):
+        self.profile_cog = self.bot.get_cog("Profile")
         await interaction.response.defer()
-        await self.inventory_cog.open_inventory(interaction)
+        await self.profile_cog.open_profile(interaction)
         
 def setup(bot):
     bot.add_cog(Village(bot))

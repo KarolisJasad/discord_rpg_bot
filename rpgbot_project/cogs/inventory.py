@@ -13,18 +13,17 @@ class Inventory(commands.Cog):
     async def open_inventory(self, interaction: discord.Interaction):
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-        equipped_items = await sync_to_async(player.get_equipped_items)()
-        inventory_items = await sync_to_async(player.get_inventory_items)()
+        inventory_items = await sync_to_async(list)(player.get_inventory_items())
 
-
-        inventory_page = discord.Embed(title="Inventory", color=discord.Color.dark_green())
-        inventory_page = discord.Embed(title="Equipped items", color=discord.Color.dark_green())
-        for item in equipped_items:
-            inventory_page.add_field(name=item.type, value=item.name)
-        inventory_embed = inventory_page
-        inventory_page = discord.Embed(title="Equipped items", color=discord.Color.dark_green())
-        inventory = discord.ui.View()
-        await interaction.followup.send(embed=inventory_embed, view=inventory)
+        inventory_embed = discord.Embed(title="Inventory", color=discord.Color.dark_green())
+        if inventory_items:
+            for item in inventory_items:
+                inventory_embed.add_field(name=item.type, value=item.name, inline=False)
+        else:
+            inventory_embed.add_field(name="No items", value="Your inventory is empty.")
+        
+        inventory_view = discord.ui.View()
+        await interaction.followup.send(embed=inventory_embed, view=inventory_view)
 
 def setup(bot):
     bot.add_cog(Inventory(bot))

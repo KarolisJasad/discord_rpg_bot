@@ -20,7 +20,6 @@ class AreaSelection(commands.Cog):
     async def areaselection(self, ctx):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         cave_location = await sync_to_async(Location.objects.get)(name="Cave")
-        village_location = await sync_to_async(Location.objects.get)(name="Village")
 
         forest_page = discord.Embed(title=forest_location.name, color=discord.Color.blue())
         forest_page.add_field(name="Description", value=forest_location.description)
