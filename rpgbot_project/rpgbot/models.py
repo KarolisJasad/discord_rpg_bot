@@ -121,13 +121,13 @@ class Player(models.Model):
         helmet = Item.HELMET.lower()
         ring = Item.RING.lower()
         amulet = Item.AMULET.lower()
-        if item_type == weapon and self.equipped_weapon:
+        if item_type == weapon:
             return True
-        elif item_type == body_armor and self.equipped_body_armour:
+        elif item_type == body_armor:
             return True
-        elif item_type == helmet and self.equipped_helmet:
+        elif item_type == helmet:
             return True
-        elif item_type == leg_armor and not self.equipped_leg_armor:
+        elif item_type == leg_armor:
             return True
         elif item_type == ring:
             if self.equipped_ring1 and self.equipped_ring2:
@@ -136,7 +136,7 @@ class Player(models.Model):
                 return True
             elif not self.equipped_ring2:
                 return True
-        elif item_type == amulet and self.equipped_amulet:
+        elif item_type == amulet:
             return True
         else:
             return False
@@ -146,41 +146,98 @@ class Player(models.Model):
         if item.type == Item.WEAPON:
             if self.equipped_weapon:
                 # Put the currently equipped weapon in the inventory
+                self.attack -= self.equipped_weapon.attack
                 self.inventory.add(self.equipped_weapon)
             self.equipped_weapon = item
+            self.attack += self.equipped_weapon.attack
         elif item.type == Item.BODY_ARMOR:
             if self.equipped_body_armour:
                 # Put the currently equipped body armor in the inventory
+                self.defense -= self.equipped_body_armour.defense
+                self.max_health -= self.equipped_body_armour.health
+                if self.current_health > self.max_health:
+                    self.current_health == self.max_health
                 self.inventory.add(self.equipped_body_armour)
             self.equipped_body_armour = item
+            self.defense += self.equipped_body_armour.defense
+            self.max_health += self.equipped_body_armour.health
+            self.current_health += self.equipped_body_armour.health
         elif item.type == Item.HELMET:
             if self.equipped_helmet:
                 # Put the currently equipped helmet in the inventory
+                self.defense -= self.equipped_helmet.defense
+                self.max_health -= self.equipped_helmet.health
+                if self.current_health > self.max_health:
+                    self.current_health == self.max_health
                 self.inventory.add(self.equipped_helmet)
             self.equipped_helmet = item
+            self.defense += self.equipped_helmet.defense
+            self.max_health += self.equipped_helmet.health
+            self.current_health += self.equipped_helmet.health
         elif item.type == Item.LEG_ARMOR:
             if self.equipped_leg_armor:
-                # Put the currently equipped leg armor in the inventory
+                self.defense -= self.equipped_leg_armor.defense
+                self.max_health -= self.equipped_leg_armor.health
+                if self.current_health > self.max_health:
+                    self.current_health == self.max_health
                 self.inventory.add(self.equipped_leg_armor)
             self.equipped_leg_armor = item
+            self.defense += self.equipped_leg_armor.defense
+            self.max_health += self.equipped_leg_armor.health
+            self.current_health += self.equipped_leg_armor.health
         elif item.type == Item.RING:
             if not self.equipped_ring1:
                 self.equipped_ring1 = item
+                self.attack += self.equipped_ring1.attack
+                self.defense += self.equipped_ring1.defense
+                self.max_health += self.equipped_ring1.health
+                self.current_health += self.equipped_ring1.health
             elif not self.equipped_ring2:
                 self.equipped_ring2 = item
+                self.attack += self.equipped_ring2.attack
+                self.defense += self.equipped_ring2.defense
+                self.max_health += self.equipped_ring2.health
+                self.current_health += self.equipped_ring2.health
             else:
                 # Replace the ring with the lowest attack value
                 if self.equipped_ring1.attack <= self.equipped_ring2.attack:
                     self.inventory.add(self.equipped_ring1)
+                    self.attack -= self.equipped_ring1.attack
+                    self.defense -= self.equipped_ring1.defense
+                    self.max_health -= self.equipped_ring1.health
+                    if self.current_health > self.max_health:
+                        self.current_health == self.max_health
                     self.equipped_ring1 = item
+                    self.attack += self.equipped_ring1.attack
+                    self.defense += self.equipped_ring1.defense
+                    self.max_health += self.equipped_ring1.health
+                    self.current_health += self.equipped_ring1.health
                 else:
                     self.inventory.add(self.equipped_ring2)
+                    self.attack -= self.equipped_ring2.attack
+                    self.defense -= self.equipped_ring2.defense
+                    self.max_health -= self.equipped_ring2.health
+                    if self.current_health > self.max_health:
+                        self.current_health == self.max_health
                     self.equipped_ring2 = item
+                    self.attack += self.equipped_ring2.attack
+                    self.defense += self.equipped_ring2.defense
+                    self.max_health += self.equipped_ring2.health
+                    self.current_health += self.equipped_ring2.health
         elif item.type == Item.AMULET:
             if self.equipped_amulet:
                 # Put the currently equipped amulet in the inventory
                 self.inventory.add(self.equipped_amulet)
+                self.attack -= self.equipped_amulet.attack
+                self.defense -= self.equipped_amulet.defense
+                self.max_health -= self.equipped_amulet.health
+                if self.current_health > self.max_health:
+                    self.current_health == self.max_health
             self.equipped_amulet = item
+            self.attack += self.equipped_amulet.attack
+            self.defense += self.equipped_amulet.defense
+            self.max_health += self.equipped_amulet.health
+            self.current_health += self.equipped_amulet.health
 
         # Remove the equipped item from the inventory
         self.inventory.remove(item)
