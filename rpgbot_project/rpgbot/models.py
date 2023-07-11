@@ -112,6 +112,80 @@ class Player(models.Model):
         verbose_name = _("player")
         verbose_name_plural = _("players")
 
+    def can_equip_item(self, item):
+        # Check if the player can equip the item based on the item's type
+        item_type = item.type.lower()
+        weapon = Item.WEAPON.lower()
+        body_armor = Item.BODY_ARMOR.lower()
+        leg_armor = Item.LEG_ARMOR.lower()
+        helmet = Item.HELMET.lower()
+        ring = Item.RING.lower()
+        amulet = Item.AMULET.lower()
+        if item_type == weapon and self.equipped_weapon:
+            return True
+        elif item_type == body_armor and self.equipped_body_armour:
+            return True
+        elif item_type == helmet and self.equipped_helmet:
+            return True
+        elif item_type == leg_armor and not self.equipped_leg_armor:
+            return True
+        elif item_type == ring:
+            if self.equipped_ring1 and self.equipped_ring2:
+                return True
+            elif not self.equipped_ring1:
+                return True
+            elif not self.equipped_ring2:
+                return True
+        elif item_type == amulet and self.equipped_amulet:
+            return True
+        else:
+            return False
+
+    def equip_item(self, item):
+        # Equip the item based on its type
+        if item.type == Item.WEAPON:
+            if self.equipped_weapon:
+                # Put the currently equipped weapon in the inventory
+                self.inventory.add(self.equipped_weapon)
+            self.equipped_weapon = item
+        elif item.type == Item.BODY_ARMOR:
+            if self.equipped_body_armour:
+                # Put the currently equipped body armor in the inventory
+                self.inventory.add(self.equipped_body_armour)
+            self.equipped_body_armour = item
+        elif item.type == Item.HELMET:
+            if self.equipped_helmet:
+                # Put the currently equipped helmet in the inventory
+                self.inventory.add(self.equipped_helmet)
+            self.equipped_helmet = item
+        elif item.type == Item.LEG_ARMOR:
+            if self.equipped_leg_armor:
+                # Put the currently equipped leg armor in the inventory
+                self.inventory.add(self.equipped_leg_armor)
+            self.equipped_leg_armor = item
+        elif item.type == Item.RING:
+            if not self.equipped_ring1:
+                self.equipped_ring1 = item
+            elif not self.equipped_ring2:
+                self.equipped_ring2 = item
+            else:
+                # Replace the ring with the lowest attack value
+                if self.equipped_ring1.attack <= self.equipped_ring2.attack:
+                    self.inventory.add(self.equipped_ring1)
+                    self.equipped_ring1 = item
+                else:
+                    self.inventory.add(self.equipped_ring2)
+                    self.equipped_ring2 = item
+        elif item.type == Item.AMULET:
+            if self.equipped_amulet:
+                # Put the currently equipped amulet in the inventory
+                self.inventory.add(self.equipped_amulet)
+            self.equipped_amulet = item
+
+        # Remove the equipped item from the inventory
+        self.inventory.remove(item)
+        self.save()
+
     def get_equipped_items(self):
         equipped_items = []
         if self.equipped_weapon:
