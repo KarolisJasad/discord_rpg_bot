@@ -394,6 +394,12 @@ class Enemy(models.Model):
     level = models.IntegerField(_("level"), default=1)
     gold = models.IntegerField(_("gold"), default=0)
     xp = models.IntegerField(_("experience"), default=10)
+    drops = models.ManyToManyField(
+        Item,
+        verbose_name=_("drops"),
+        related_name="drops",
+        blank=True
+    )
 
     class Meta:
         verbose_name = _("enemy")
