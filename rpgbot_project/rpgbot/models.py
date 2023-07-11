@@ -299,8 +299,9 @@ class Player(models.Model):
             return True  # Level increased
         return False  # Level did not increase
 
-    def attack_enemy(self, enemy):
+    def attack_enemy(self, enemy_instance):
         # Calculate the damage dealt by the player
+        enemy = enemy_instance.enemy
         damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
         modified_attack = self.attack + damage_range
 
@@ -308,17 +309,17 @@ class Player(models.Model):
         modified_attack = max(modified_attack, 0)
 
         # Reduce the enemy's health based on the damage dealt
-        enemy.current_health -= modified_attack
-        enemy.current_health = max(enemy.current_health, 0)  # Ensure enemy health doesn't go below 0
+        enemy_instance.current_health -= modified_attack
+        enemy_instance.current_health = max(enemy_instance.current_health, 0)  # Ensure enemy health doesn't go below 0
 
         # # Check if the enemy is defeated
-        if enemy.current_health <= 0:
+        if enemy_instance.current_health <= 0:
             # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
             self.money += enemy.gold
             self.xp += enemy.xp
         # Save the updated player and enemy objects to the database
         self.save()
-        enemy.save()
+        enemy_instance.save()
         return modified_attack
 
     def __str__(self):
@@ -405,39 +406,6 @@ class Enemy(models.Model):
         verbose_name = _("enemy")
         verbose_name_plural = _("enemies")
 
-    def attack_player(self, player):
-        # Calculate the damage dealt by the enemy
-        damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
-        e_modified_attack = self.attack + damage_range
-
-        # Ensure damage is non-negative
-        e_modified_attack = max(e_modified_attack, 0)
-
-        # Reduce the player's health based on the damage dealt
-        player.current_health -= e_modified_attack
-        player.current_health = max(player.current_health, 0)  # Ensure player health doesn't go below 0
-
-        # Check if the player is defeated
-        if player.current_health <= 0:
-            # Handle player defeat (e.g., reset player attributes, display game over message, etc.)
-            self.handle_player_defeat(player)
-
-        # Save the updated enemy and player objects to the database
-        self.save()
-        player.save()
-        return e_modified_attack
-
-    def handle_player_defeat(self, player):
-        # Reset player attributes or perform any other necessary actions
-        player.delete()
-        # ... other attribute resets ...
-
-        # Save the updated player object to the database
-        player.save()
-
-    def __str__(self):
-        return self.name
-
     def get_absolute_url(self):
         return reverse("enemy_detail", kwargs={"pk": self.pk})
 
@@ -480,6 +448,39 @@ class EnemyInstance(models.Model):
     class Meta:
         verbose_name = _("enemyInstances")
         verbose_name_plural = _("enemyInstancess")
+
+    def attack_player(self, player):
+        # Calculate the damage dealt by the enemy
+        damage_range = random.randint(-5, 5)  # Generate a random value within -5 and +5
+        e_modified_attack = self.enemy.attack + damage_range
+
+        # Ensure damage is non-negative
+        e_modified_attack = max(e_modified_attack, 0)
+
+        # Reduce the player's health based on the damage dealt
+        player.current_health -= e_modified_attack
+        player.current_health = max(player.current_health, 0)  # Ensure player health doesn't go below 0
+
+        # Check if the player is defeated
+        if player.current_health <= 0:
+            # Handle player defeat (e.g., reset player attributes, display game over message, etc.)
+            self.handle_player_defeat(player)
+
+        # Save the updated enemy and player objects to the database
+        self.save()
+        player.save()
+        return e_modified_attack
+
+    def handle_player_defeat(self, player):
+        # Reset player attributes or perform any other necessary actions
+        player.delete()
+        # ... other attribute resets ...
+
+        # Save the updated player object to the database
+        player.save()
+
+    def __str__(self):
+        return self.name
 
     def __str__(self):
         return self.enemy.name
