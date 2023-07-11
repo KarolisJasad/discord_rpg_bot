@@ -463,21 +463,26 @@ class Location(models.Model):
     def get_absolute_url(self):
         return reverse("location_detail", kwargs={"pk": self.pk})
 
-class EnemyInstances(models.Model):
+class EnemyInstance(models.Model):
     enemy = models.ForeignKey(
         Enemy,
         verbose_name=_("enemy"),
         on_delete=models.CASCADE,
-        related_name="enemy"
+        related_name="enemy_instances"
     )
-    
+    current_health = models.IntegerField(_("current_health"), default=0)
 
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only set the default value if the object is being created
+            self.current_health = self.enemy.max_health
+        super().save(*args, **kwargs)
+    
     class Meta:
         verbose_name = _("enemyInstances")
         verbose_name_plural = _("enemyInstancess")
 
     def __str__(self):
-        return self.enemy
+        return self.enemy.name
 
     def get_absolute_url(self):
         return reverse("enemyInstances_detail", kwargs={"pk": self.pk})
