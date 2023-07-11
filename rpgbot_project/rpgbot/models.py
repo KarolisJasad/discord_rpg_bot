@@ -317,6 +317,9 @@ class Player(models.Model):
             # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
             self.money += enemy.gold
             self.xp += enemy.xp
+            drops = enemy_instance.drop_items()
+            for item in drops:
+                self.inventory.add(item)
         # Save the updated player and enemy objects to the database
         self.save()
         enemy_instance.save()
@@ -478,6 +481,9 @@ class EnemyInstance(models.Model):
 
         # Save the updated player object to the database
         player.save()
+    
+    def drop_items(self):
+        return self.enemy.drops.all()
 
     def __str__(self):
         return self.name
