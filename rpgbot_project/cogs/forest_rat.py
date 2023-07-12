@@ -25,16 +25,16 @@ class ForestRat(commands.Cog):
         async def attack_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
                 # Player's attack logic goes here
-                enemy_attack = await sync_to_async(enemy_rat.attack_player)(player)
-                player_attack = await sync_to_async(player.attack_enemy)(enemy_rat)
+                enemy_attack, player_block = await sync_to_async(enemy_rat.attack_player)(player)
+                player_attack, enemy_block = await sync_to_async(player.attack_enemy)(enemy_rat)
 
                 await handle_level_up(player, button_interaction.channel)
 
                 embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
                 embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
                 embed.add_field(name=enemy_rat.enemy.name, value=f":heart: **HP**: {enemy_rat.current_health}/{enemy_rat.enemy.max_health}\n:crossed_swords: **ATTACK**: {enemy_rat.enemy.attack}\n:shield: **DEFENCE**: {enemy_rat.enemy.defense}", inline=True)
-                embed.add_field(name="Player Attack", value=f"{player.username} attacks {enemy_rat.enemy.name} and deals {player_attack} damage.", inline=False)
-                embed.add_field(name="Enemy Attack", value=f"{enemy_rat.enemy.name} attacks {player.username} and deals {enemy_attack} damage.", inline=False)
+                embed.add_field(name="Player Attack", value=f"{player.username} attacks {enemy_rat.enemy.name} and deals {player_attack} damage {enemy_block} was blocked.", inline=False)
+                embed.add_field(name="Enemy Attack", value=f"{enemy_rat.enemy.name} attacks {player.username} and deals {enemy_attack} damage {player_block} was blocked.", inline=False)
                 if player.current_health > 0 and enemy_rat.current_health <= 0:
                     victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_rat.enemy.name}, you've gained {enemy_rat.enemy.xp} exeprience and {enemy_rat.enemy.gold} gold!", color=discord.Color.green())
                     victory_embed.add_field(name="Journey continues", value=forest_location.victory_message)
