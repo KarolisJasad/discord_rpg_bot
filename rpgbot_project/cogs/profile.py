@@ -16,7 +16,7 @@ class Profile(commands.Cog):
         equipped_items = await sync_to_async(player.get_equipped_items)()
 
         profile_embed = discord.Embed(title="Player Profile", color=discord.Color.dark_blue())
-        profile_embed.add_field(name="Player stats", value=f'Health: {player.current_health}/{player.max_health}\nPlayer attack: {player.attack}\nPlayer defense: {player.defense}', inline=False)
+        profile_embed.add_field(name="Player stats", value=f'Health: {player.current_health}/{player.max_health}\nPlayer attack: {player.attack}\nPlayer defense: {player.defense}\nPlayer money: {player.money}', inline=False)
         
         if equipped_items:
             equipped_items_str = "\n".join([f"{item.type}: {item.name}" for item in equipped_items])
@@ -28,6 +28,9 @@ class Profile(commands.Cog):
         inventory_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Inventory", custom_id="inventory_button")
         inventory_button.callback = self.on_inventory_button_click
         profile_page.add_item(inventory_button)
+        back_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Back", custom_id="back_button")
+        back_button.callback = self.on_back_button_click
+        profile_page.add_item(back_button)
 
         await interaction.followup.send(embed=profile_embed, view=profile_page)
     
@@ -35,6 +38,11 @@ class Profile(commands.Cog):
         self.inventory_cog = self.bot.get_cog("Inventory")
         await interaction.response.defer()
         await self.inventory_cog.open_inventory(interaction)
+
+    async def on_back_button_click(self, interaction: discord.Interaction):
+        village_cog = self.bot.get_cog("Village")
+        await interaction.response.defer()
+        await village_cog.enter_village(interaction)
 
 def setup(bot):
     bot.add_cog(Profile(bot))

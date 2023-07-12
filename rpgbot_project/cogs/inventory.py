@@ -34,9 +34,18 @@ class Select(discord.ui.Select):
 
 
 class SelectView(discord.ui.View):
-    def __init__(self, inventory_items, *, timeout=180):
+    def __init__(self, inventory_items, *, timeout=180, bot: GameBot):
+        self.bot = bot
         super().__init__(timeout=timeout)
         self.add_item(Select(inventory_items))
+        back_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Back", custom_id="back_button")
+        back_button.callback = self.on_back_button_click
+        self.add_item(back_button)
+
+    async def on_back_button_click(self, interaction: discord.Interaction):
+        self.profile_cog = self.bot.get_cog("Profile")
+        await interaction.response.defer()
+        await self.profile_cog.open_profile(interaction)
 
 
 class Inventory(commands.Cog):
@@ -50,7 +59,7 @@ class Inventory(commands.Cog):
         inventory_items = await sync_to_async(list)(player.get_inventory_items())
 
         if inventory_items:
-            view = SelectView(inventory_items)
+            view = SelectView(inventory_items, bot=self.bot)
             await interaction.followup.send("Select an item from your inventory to equip:", view=view)
         else:
             await interaction.followup.send("Your inventory is empty.")
