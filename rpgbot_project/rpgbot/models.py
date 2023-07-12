@@ -49,7 +49,8 @@ class Player(models.Model):
         "Item",
         verbose_name=_("inventory"),
         related_name="inventory",
-        blank=True
+        blank=True,
+        null=True
     )
     equipped_weapon = models.ForeignKey(
         "Item",
