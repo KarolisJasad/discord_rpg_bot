@@ -50,7 +50,6 @@ class Player(models.Model):
         verbose_name=_("inventory"),
         related_name="inventory",
         blank=True,
-        null=True
     )
     equipped_weapon = models.ForeignKey(
         "Item",
@@ -409,6 +408,9 @@ class Enemy(models.Model):
     class Meta:
         verbose_name = _("enemy")
         verbose_name_plural = _("enemies")
+    
+    def __str__(self):
+        return self.name
 
     def get_absolute_url(self):
         return reverse("enemy_detail", kwargs={"pk": self.pk})
