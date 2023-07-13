@@ -55,7 +55,6 @@ class AreaSelection(commands.Cog):
 
         self.forest_rat_cog = self.bot.get_cog("ForestRat")
         self.cave_troll_cog = self.bot.get_cog("CaveTroll")
-        self.village_cog = self.bot.get_cog("Village")
         
         await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
 

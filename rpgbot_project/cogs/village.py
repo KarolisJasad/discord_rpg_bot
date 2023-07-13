@@ -24,8 +24,11 @@ class Village(commands.Cog):
         shop_button.callback = self.on_shop_button_click
         profile_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Profile", custom_id="profile_button")
         profile_button.callback = self.on_profile_button_click
+        adventure_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Adventure", custom_id="adventure_button")
+        adventure_button.callback = self.on_profile_button_click
         village.add_item(shop_button)
         village.add_item(profile_button)
+        village.add_item(adventure_button)
 
 
         await interaction.followup.send(embed=location_embed, view=village)
@@ -39,6 +42,11 @@ class Village(commands.Cog):
         self.profile_cog = self.bot.get_cog("Profile")
         await interaction.response.defer()
         await self.profile_cog.open_profile(interaction)
+
+    async def on_profile_button_click(self, interaction: discord.Interaction):
+        self.adventure_cog = self.bot.get_cog("Adventure")
+        await interaction.response.defer()
+        await self.adventure_cog.open_adventure(interaction)
         
 def setup(bot):
     bot.add_cog(Village(bot))
