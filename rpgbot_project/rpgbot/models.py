@@ -358,7 +358,7 @@ class Item(models.Model):
     defense = models.IntegerField(_("defense"), default=0)
     health = models.IntegerField(_("health"), default=0)
     special_attributes = models.JSONField(_("speccial_attributes"), default=dict, blank=True, null=True)
-    
+    price = models.IntegerField(_("price"), default=0)
 
     class Meta:
         verbose_name = _("item")
@@ -491,10 +491,24 @@ class EnemyInstance(models.Model):
         return self.enemy.drops.all()
 
     def __str__(self):
-        return self.name
-
-    def __str__(self):
         return self.enemy.name
 
     def get_absolute_url(self):
         return reverse("enemyInstances_detail", kwargs={"pk": self.pk})
+
+class Shop(models.Model):
+    name = models.CharField(_("shop"), max_length=100)
+    items = models.ManyToManyField(
+        Item,
+        verbose_name=_(""),
+    )
+    
+    class Meta:
+        verbose_name = _("shop")
+        verbose_name_plural = _("shops")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("shop_detail", kwargs={"pk": self.pk})
