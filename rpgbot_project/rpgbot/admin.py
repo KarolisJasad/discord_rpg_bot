@@ -21,7 +21,6 @@ class LocationAdmin(admin.ModelAdmin):
     def enemies(self, obj):
         return ', '.join([enemy.name for enemy in obj.enemy.all()])
 
-
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'attack', 'defense', 'health')
@@ -31,6 +30,10 @@ class EnemiesAdmin(admin.ModelAdmin):
     list_display = ('id', 'enemy', 'current_health')
     list_filter = ('enemy',)
     search_fields = ('enemy__name',)
+
+@admin.register(Shop)
+class ShopAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 

@@ -499,8 +499,8 @@ class EnemyInstance(models.Model):
 class Shop(models.Model):
     name = models.CharField(_("shop"), max_length=100)
     items = models.ManyToManyField(
-        Item,
-        verbose_name=_(""),
+        Item, 
+        verbose_name=_("items")
     )
     
     class Meta:
