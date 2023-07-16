@@ -33,7 +33,7 @@ class Village(commands.Cog):
         await interaction.followup.send(embed=location_embed, view=village)
 
     async def on_shop_button_click(self, interaction: discord.Interaction):
-        self.shop_cog = self.bot.get_cog("Shop")
+        self.shop_cog = self.bot.get_cog("VillageShop")
         await interaction.response.defer()
         await self.shop_cog.open_shop(interaction)
     

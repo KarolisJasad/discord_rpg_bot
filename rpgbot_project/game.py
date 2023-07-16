@@ -16,7 +16,7 @@ from cogs.village import Village
 from cogs.profile import Profile
 from cogs.inventory import Inventory
 from cogs.adventure import Adventure
-# from cogs.village_shop import Shop
+from cogs.village_shop import VillageShop
 
 
 
@@ -65,7 +65,7 @@ async def on_ready():
     await bot.add_cog(Profile(bot))
     await bot.add_cog(Inventory(bot))
     await bot.add_cog(Adventure(bot))
-    # await bot.add_cog(Shop(bot))
+    await bot.add_cog(VillageShop(bot))
 
 
 # Add the ClassMenu cog to the bot
