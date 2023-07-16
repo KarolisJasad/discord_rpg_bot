@@ -16,7 +16,7 @@ class Profile(commands.Cog):
         equipped_items = await sync_to_async(player.get_equipped_items)()
 
         profile_embed = discord.Embed(title="Player Profile", color=discord.Color.dark_blue())
-        profile_embed.add_field(name="Player stats", value=f'Health: {player.current_health}/{player.max_health}\nPlayer attack: {player.attack}\nPlayer defense: {player.defense}\nPlayer money: {player.money}', inline=False)
+        profile_embed.add_field(name="Player stats", value=f'Health: {player.current_health}/{player.max_health}\nAttack: {player.attack}\nDefense: {player.defense}\nMoney: {player.money}', inline=False)
         
         if equipped_items:
             equipped_items_str = "\n".join([f"{item.type}: {item.name}" for item in equipped_items])
