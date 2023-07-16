@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Shop, Item, Location, Player
+from rpgbot.models import Shop, Item, Location, Player, ItemInstance
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 
@@ -50,11 +50,16 @@ class VillageShop(commands.Cog):
         if player.money >= item.price:
             player.money -= item.price
             await sync_to_async(player.save)()
-            await sync_to_async(player.inventory.add)(item)
+            # Create an ItemInstance and add it to the player's inventory
+            item_instance = await sync_to_async(ItemInstance.objects.create)(
+                item=item,
+                player=player
+            )
+            await sync_to_async(player.inventory.add)(item_instance)
             await interaction.response.edit_message(content=f"You have successfully bought {item.name}.")
         else:
             await interaction.response.edit_message(content="Error: Insufficient funds.")
-
+            
     async def on_back_button_click(self, interaction: discord.Interaction):
         village_cog = self.bot.get_cog("Village")
         await interaction.response.defer()

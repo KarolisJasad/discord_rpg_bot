@@ -46,13 +46,13 @@ class Player(models.Model):
         null=True,
     )
     inventory = models.ManyToManyField(
-        "Item",
+        "ItemInstance",
         verbose_name=_("inventory"),
-        related_name="inventory",
+        related_name="players",
         blank=True,
     )
     equipped_weapon = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_weapon"),
         on_delete=models.SET_NULL,
         related_name="equipped_weapon",
@@ -60,7 +60,7 @@ class Player(models.Model):
         null=True
     )
     equipped_body_armour = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_body_armour"),
         on_delete=models.SET_NULL,
         related_name="equipped_body_armour",
@@ -68,7 +68,7 @@ class Player(models.Model):
         null=True
     )
     equipped_helmet = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_helmet"),
         on_delete=models.SET_NULL,
         related_name="equipped_helmet",
@@ -76,7 +76,7 @@ class Player(models.Model):
         null=True
     )
     equipped_leg_armor = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_leg_armor"),
         on_delete=models.SET_NULL,
         related_name="equipped_leg_armor",
@@ -84,7 +84,7 @@ class Player(models.Model):
         null=True
     )
     equipped_ring1 = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_ring1"),
         on_delete=models.SET_NULL,
         related_name="equipped_ring1",
@@ -92,7 +92,7 @@ class Player(models.Model):
         null=True
     )
     equipped_ring2 = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_ring2"),
         on_delete=models.SET_NULL,
         related_name="equipped_ring2",
@@ -100,7 +100,7 @@ class Player(models.Model):
         null=True
     )
     equipped_amulet = models.ForeignKey(
-        "Item",
+        "ItemInstance",
         verbose_name=_("equipped_amulet"),
         on_delete=models.SET_NULL,
         related_name="equipped_amulet",
@@ -112,9 +112,8 @@ class Player(models.Model):
         verbose_name = _("player")
         verbose_name_plural = _("players")
 
-    def can_equip_item(self, item):
-        # Check if the player can equip the item based on the item's type
-        item_type = item.type.lower()
+    def can_equip_item(self, item_instance):
+        item_type = item_instance.item.type.lower()
         weapon = Item.WEAPON.lower()
         body_armor = Item.BODY_ARMOR.lower()
         leg_armor = Item.LEG_ARMOR.lower()
@@ -141,107 +140,105 @@ class Player(models.Model):
         else:
             return False
 
-    def equip_item(self, item):
-        # Equip the item based on its type
-        if item.type == Item.WEAPON:
+    def equip_item(self, item_instance):
+        item_type = item_instance.item.type
+        if not self.can_equip_item(item_instance):
+            return False
+
+        if item_type == Item.WEAPON:
             if self.equipped_weapon:
-                # Put the currently equipped weapon in the inventory
-                self.attack -= self.equipped_weapon.attack
+                self.attack -= self.equipped_weapon.item.attack
                 self.inventory.add(self.equipped_weapon)
-            self.equipped_weapon = item
-            self.attack += self.equipped_weapon.attack
-        elif item.type == Item.BODY_ARMOR:
+            self.equipped_weapon = item_instance
+            self.attack += self.equipped_weapon.item.attack
+        elif item_type == Item.BODY_ARMOR:
             if self.equipped_body_armour:
-                # Put the currently equipped body armor in the inventory
-                self.defense -= self.equipped_body_armour.defense
-                self.max_health -= self.equipped_body_armour.health
+                self.defense -= self.equipped_body_armour.item.defense
+                self.max_health -= self.equipped_body_armour.item.health
                 if self.current_health > self.max_health:
-                    self.current_health == self.max_health
+                    self.current_health = self.max_health
                 self.inventory.add(self.equipped_body_armour)
-            self.equipped_body_armour = item
-            self.defense += self.equipped_body_armour.defense
-            self.max_health += self.equipped_body_armour.health
-            self.current_health += self.equipped_body_armour.health
-        elif item.type == Item.HELMET:
+            self.equipped_body_armour = item_instance
+            self.defense += self.equipped_body_armour.item.defense
+            self.max_health += self.equipped_body_armour.item.health
+            self.current_health += self.equipped_body_armour.item.health
+        elif item_type == Item.HELMET:
             if self.equipped_helmet:
-                # Put the currently equipped helmet in the inventory
-                self.defense -= self.equipped_helmet.defense
-                self.max_health -= self.equipped_helmet.health
+                self.defense -= self.equipped_helmet.item.defense
+                self.max_health -= self.equipped_helmet.item.health
                 if self.current_health > self.max_health:
-                    self.current_health == self.max_health
+                    self.current_health = self.max_health
                 self.inventory.add(self.equipped_helmet)
-            self.equipped_helmet = item
-            self.defense += self.equipped_helmet.defense
-            self.max_health += self.equipped_helmet.health
-            self.current_health += self.equipped_helmet.health
-        elif item.type == Item.LEG_ARMOR:
+            self.equipped_helmet = item_instance
+            self.defense += self.equipped_helmet.item.defense
+            self.max_health += self.equipped_helmet.item.health
+            self.current_health += self.equipped_helmet.item.health
+        elif item_type == Item.LEG_ARMOR:
             if self.equipped_leg_armor:
-                self.defense -= self.equipped_leg_armor.defense
-                self.max_health -= self.equipped_leg_armor.health
+                self.defense -= self.equipped_leg_armor.item.defense
+                self.max_health -= self.equipped_leg_armor.item.health
                 if self.current_health > self.max_health:
-                    self.current_health == self.max_health
+                    self.current_health = self.max_health
                 self.inventory.add(self.equipped_leg_armor)
-            self.equipped_leg_armor = item
-            self.defense += self.equipped_leg_armor.defense
-            self.max_health += self.equipped_leg_armor.health
-            self.current_health += self.equipped_leg_armor.health
-        elif item.type == Item.RING:
+            self.equipped_leg_armor = item_instance
+            self.defense += self.equipped_leg_armor.item.defense
+            self.max_health += self.equipped_leg_armor.item.health
+            self.current_health += self.equipped_leg_armor.item.health
+        elif item_type == Item.RING:
             if not self.equipped_ring1:
-                self.equipped_ring1 = item
+                self.equipped_ring1 = item_instance
                 self.attack += self.equipped_ring1.attack
                 self.defense += self.equipped_ring1.defense
                 self.max_health += self.equipped_ring1.health
                 self.current_health += self.equipped_ring1.health
             elif not self.equipped_ring2:
-                self.equipped_ring2 = item
+                self.equipped_ring2 = item_instance
                 self.attack += self.equipped_ring2.attack
                 self.defense += self.equipped_ring2.defense
                 self.max_health += self.equipped_ring2.health
                 self.current_health += self.equipped_ring2.health
             else:
-                # Replace the ring with the lowest attack value
-                if self.equipped_ring1.attack <= self.equipped_ring2.attack:
+                if self.equipped_ring1.item.attack <= self.equipped_ring2.attack:
                     self.inventory.add(self.equipped_ring1)
                     self.attack -= self.equipped_ring1.attack
                     self.defense -= self.equipped_ring1.defense
                     self.max_health -= self.equipped_ring1.health
                     if self.current_health > self.max_health:
-                        self.current_health == self.max_health
-                    self.equipped_ring1 = item
+                        self.current_health = self.max_health
+                    self.equipped_ring1 = item_instance
                     self.attack += self.equipped_ring1.attack
                     self.defense += self.equipped_ring1.defense
                     self.max_health += self.equipped_ring1.health
                     self.current_health += self.equipped_ring1.health
                 else:
                     self.inventory.add(self.equipped_ring2)
-                    self.attack -= self.equipped_ring2.attack
-                    self.defense -= self.equipped_ring2.defense
-                    self.max_health -= self.equipped_ring2.health
+                    self.attack -= self.equipped_ring2.item.attack
+                    self.defense -= self.equipped_ring2.item.defense
+                    self.max_health -= self.equipped_ring2.item.health
                     if self.current_health > self.max_health:
-                        self.current_health == self.max_health
-                    self.equipped_ring2 = item
-                    self.attack += self.equipped_ring2.attack
-                    self.defense += self.equipped_ring2.defense
-                    self.max_health += self.equipped_ring2.health
-                    self.current_health += self.equipped_ring2.health
-        elif item.type == Item.AMULET:
+                        self.current_health = self.max_health
+                    self.equipped_ring2 = item_instance
+                    self.attack += self.equipped_ring2.item.attack
+                    self.defense += self.equipped_ring2.item.defense
+                    self.max_health += self.equipped_ring2.item.health
+                    self.current_health += self.equipped_ring2.item.health
+        elif item_type == Item.AMULET:
             if self.equipped_amulet:
-                # Put the currently equipped amulet in the inventory
                 self.inventory.add(self.equipped_amulet)
-                self.attack -= self.equipped_amulet.attack
-                self.defense -= self.equipped_amulet.defense
-                self.max_health -= self.equipped_amulet.health
+                self.attack -= self.equipped_amulet.item.attack
+                self.defense -= self.equipped_amulet.item.defense
+                self.max_health -= self.equipped_amulet.item.health
                 if self.current_health > self.max_health:
-                    self.current_health == self.max_health
-            self.equipped_amulet = item
-            self.attack += self.equipped_amulet.attack
-            self.defense += self.equipped_amulet.defense
-            self.max_health += self.equipped_amulet.health
-            self.current_health += self.equipped_amulet.health
+                    self.current_health = self.max_health
+            self.equipped_amulet = item_instance
+            self.attack += self.equipped_amulet.item.attack
+            self.defense += self.equipped_amulet.item.defense
+            self.max_health += self.equipped_amulet.item.health
+            self.current_health += self.equipped_amulet.item.health
 
-        # Remove the equipped item from the inventory
-        self.inventory.remove(item)
+        self.inventory.remove(item_instance)
         self.save()
+        return True
 
     def get_equipped_items(self):
         equipped_items = []
@@ -260,7 +257,7 @@ class Player(models.Model):
         if self.equipped_amulet:
             equipped_items.append(self.equipped_amulet)
         return equipped_items
-    
+
     def get_inventory_items(self):
         return self.inventory.all()
 
@@ -318,9 +315,9 @@ class Player(models.Model):
             # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
             self.money += enemy.gold
             self.xp += enemy.xp
-            drops = enemy_instance.drop_items()
-            for item in drops:
-                self.inventory.add(item)
+            drops = enemy_instance.drop_items(self)
+            for item_instance in drops:
+                self.inventory.add(item_instance)
         # Save the updated player and enemy objects to the database
         self.save()
         enemy_instance.save()
@@ -373,7 +370,7 @@ class Item(models.Model):
 class ItemInstance(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.PositiveIntegerField(default=1)
 
     def increase_quantity(self, amount=1):
         self.quantity += amount
@@ -383,6 +380,10 @@ class ItemInstance(models.Model):
         if self.quantity - amount >= 0:
             self.quantity -= amount
             self.save()
+
+    def get_item_name(self):
+        name = self.item.name
+        return name
 
     def __str__(self):
         return f"{self.quantity} x {self.item.name}"
@@ -502,8 +503,13 @@ class EnemyInstance(models.Model):
         # Save the updated player object to the database
         player.save()
     
-    def drop_items(self):
-        return self.enemy.drops.all()
+    def drop_items(self, player):
+        drops = self.enemy.drops.all()
+        item_instances = []
+        for item in drops:
+            item_instance = ItemInstance.objects.create(item=item, player=player)
+            item_instances.append(item_instance)
+        return item_instances
 
     def __str__(self):
         return self.enemy.name

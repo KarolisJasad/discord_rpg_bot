@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Player, Item
+from rpgbot.models import Player, ItemInstance
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 
@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 class Select(discord.ui.Select):
     def __init__(self, inventory_items):
         options = [
-            discord.SelectOption(label=item.name, value=str(item.id))
+            discord.SelectOption(label=item.item.name, value=str(item.id))
             for item in inventory_items
         ]
         super().__init__(
@@ -24,13 +24,13 @@ class Select(discord.ui.Select):
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         item_id = int(selected_option)
-        item = await sync_to_async(get_object_or_404)(Item, id=item_id)
+        item = await sync_to_async(get_object_or_404)(ItemInstance, id=item_id)
 
         if await sync_to_async(player.can_equip_item)(item):
             await sync_to_async(player.equip_item)(item)
-            await interaction.response.edit_message(content=f"Successfully equipped {item.name}.")
+            await interaction.response.edit_message(content=f"Successfully equipped {item.item.name}.")
         else:
-            await interaction.response.edit_message(content=f"You cannot equip {item.name}.")
+            await interaction.response.edit_message(content=f"You cannot equip {item.item.name}.")
 
 
 class SelectView(discord.ui.View):
@@ -57,7 +57,7 @@ class Inventory(commands.Cog):
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         inventory_items = await sync_to_async(list)(player.get_inventory_items())
-
+        await sync_to_async(print)(inventory_items)
         if inventory_items:
             view = SelectView(inventory_items, bot=self.bot)
             await interaction.followup.send("Select an item from your inventory to equip:", view=view)

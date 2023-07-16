@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Player, CharacterClass, Enemy, Location, Item, EnemyInstance, Shop
+from .models import Player, CharacterClass, Enemy, Location, Item, ItemInstance, EnemyInstance, Shop
 # Register your models here.
 
 @admin.register(Player)
@@ -34,6 +34,10 @@ class EnemiesAdmin(admin.ModelAdmin):
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
     list_display = ('name',)
+
+@admin.register(ItemInstance)
+class ItemInstancesAdmin(admin.ModelAdmin):
+    list_display = ('item', 'player', 'quantity')
 
 
 
