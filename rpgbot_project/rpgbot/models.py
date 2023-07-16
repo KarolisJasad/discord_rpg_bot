@@ -370,7 +370,22 @@ class Item(models.Model):
     def get_absolute_url(self):
         return reverse("item_detail", kwargs={"pk": self.pk})
 
+class ItemInstance(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=0)
 
+    def increase_quantity(self, amount=1):
+        self.quantity += amount
+        self.save()
+
+    def decrease_quantity(self, amount=1):
+        if self.quantity - amount >= 0:
+            self.quantity -= amount
+            self.save()
+
+    def __str__(self):
+        return f"{self.quantity} x {self.item.name}"
 
 class CharacterClass(models.Model):
     class_type = models.CharField(_("class_type"), max_length=50, choices=CHARACTER_CLASSES)
