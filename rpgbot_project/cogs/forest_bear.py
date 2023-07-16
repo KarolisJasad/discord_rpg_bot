@@ -45,8 +45,7 @@ class ForestBear(commands.Cog):
                     victory_view.add_item(continue_button)
                     continue_button.callback = continue_button_click
                     adventure_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Adventure", custom_id="adventure_button")
-                    adventure_view = discord.ui.View()
-                    adventure_view.add_item(adventure_button)
+                    victory_view.add_item(adventure_button)
                     adventure_button.callback = on_adventure_button_click
                 elif player.current_health <= 0 and enemy_bear.current_health >= 0:
                     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_bear.enemy.name}!", color=discord.Color.red())
