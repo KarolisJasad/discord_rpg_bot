@@ -8,6 +8,9 @@ from cogs.startrpg import UsernameEntry
 from cogs.introduction import Introduction
 from cogs.area_selection import AreaSelection
 from cogs.forest_rat import ForestRat
+from cogs.forest_wolf import ForestWolf
+from cogs.forest_bear import ForestBear
+from cogs.forest_goblin import ForestGoblin
 from cogs.cave_troll import CaveTroll
 from cogs.village import Village
 from cogs.profile import Profile
@@ -32,12 +35,15 @@ init_cogs = [
     "cogs.introduction",
     "cogs.area_selection",
     "cogs.forest_rat",
+    "cogs.forest_wolf",
+    "cogs.forest_bear",
+    "cogs.forest_goblin",
     "cogs.cave_troll",
     "cogs.village",
     "cogs.profile",
     "cogs.inventory",
     "cogs.adventure",
-    "cogs.village_shop",
+    # "cogs.village_shop",
 
 ]
 
@@ -51,6 +57,9 @@ async def on_ready():
     await bot.add_cog(Introduction(bot))
     await bot.add_cog(AreaSelection(bot))
     await bot.add_cog(ForestRat(bot))
+    await bot.add_cog(ForestWolf(bot))
+    await bot.add_cog(ForestBear(bot))
+    await bot.add_cog(ForestGoblin(bot))
     await bot.add_cog(CaveTroll(bot))
     await bot.add_cog(Village(bot))
     await bot.add_cog(Profile(bot))
