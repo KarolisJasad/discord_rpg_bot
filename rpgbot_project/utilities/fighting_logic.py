@@ -4,18 +4,25 @@ from utilities.levelup_embed import handle_level_up
 import discord
 import asyncio
 
-async def perform_attack(player, enemy):
-    # Perform the attack logic
+async def perform_attack(player, enemy, player_attempting_flee=False):
     enemy_attack, player_block = await sync_to_async(enemy.attack_player)(player)
-    player_attack, enemy_block = await sync_to_async(player.attack_enemy)(enemy)
+    
+    if not player_attempting_flee:
+        player_attack, enemy_block = await sync_to_async(player.attack_enemy)(enemy)
+    else:
+        player_attack, enemy_block = None, None
     
     return enemy_attack, player_block, player_attack, enemy_block
 
-def create_battle_embed(player, enemy, player_attack=None, enemy_attack=None, player_block=None, enemy_block=None):
+def create_battle_embed(player, enemy, player_attack=None, enemy_attack=None, player_block=None, enemy_block=None, flee_failed=False):
     embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
     embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
     embed.add_field(name=enemy.enemy.name, value=f":heart: **HP**: {enemy.current_health}/{enemy.enemy.max_health}\n:crossed_swords: **ATTACK**: {enemy.enemy.attack}\n:shield: **DEFENCE**: {enemy.enemy.defense}", inline=True)
-    if player_attack is not None and enemy_attack is not None:
+    
+    if flee_failed:
+        embed.add_field(name="Player action", value="You failed to flee from the enemy!", inline=False)
+        embed.add_field(name="Enemy Attack", value=f"{enemy.enemy.name} attacks {player.username} and deals {enemy_attack} damage {player_block} was blocked.", inline=False)
+    elif player_attack is not None and enemy_attack is not None:
         embed.add_field(name="Player Attack", value=f"{player.username} attacks {enemy.enemy.name} and deals {player_attack} damage {enemy_block} was blocked.", inline=False)
         embed.add_field(name="Enemy Attack", value=f"{enemy.enemy.name} attacks {player.username} and deals {enemy_attack} damage {player_block} was blocked.", inline=False)
     else:
@@ -80,4 +87,3 @@ async def handle_battle_outcome(bot, player, enemy, location, embed, button_inte
         await channel.send(embed=defeat_embed)
     else:
         await button_interaction.response.edit_message(embed=embed)
-
