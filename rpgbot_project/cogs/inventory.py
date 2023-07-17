@@ -11,11 +11,9 @@ class SelectView(discord.ui.View):
     def __init__(self, inventory_items, *, timeout=180, bot: GameBot):
         self.bot = bot
         super().__init__(timeout=timeout)
-
         item_counts = Counter(item.item.name for item in inventory_items)
         added_items = set()  # Track the items that have already been added
         options = []
-
         for item in inventory_items:
             if item_counts[item.item.name] > 1:
                 label = f"{item.item.name} x{item_counts[item.item.name]}"
@@ -26,7 +24,7 @@ class SelectView(discord.ui.View):
                 item_info = f"Attack: {item.item.attack} | Defense: {item.item.defense} | Health: {item.item.health}"
                 label = f"{item.item.name}\n{item_info}"
                 options.append(discord.SelectOption(label=label, value=str(item.id)))
-                
+
         select = discord.ui.Select(
             placeholder="Select an item to equip",
             max_values=1,
@@ -46,7 +44,6 @@ class SelectView(discord.ui.View):
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         item_id = int(selected_option)
         item_instance = await sync_to_async(get_object_or_404)(ItemInstance, id=item_id)
-
         if await sync_to_async(player.can_equip_item)(item_instance):
             await sync_to_async(player.equip_item)(item_instance)
             await interaction.response.edit_message(content=f"Successfully equipped {item_instance.item.name}.")

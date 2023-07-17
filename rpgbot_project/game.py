@@ -16,8 +16,8 @@ from cogs.village import Village
 from cogs.profile import Profile
 from cogs.inventory import Inventory
 from cogs.adventure import Adventure
-from cogs.village_shop import Village_shop
-from cogs.village_shop_buy import VillageShop
+from cogs.village_shop import VillageShop
+from cogs.village_shop_buy import VillageShopBuy
 from cogs.tavern import Tavern
 from cogs.boss_troll import BossTroll
 
@@ -55,7 +55,7 @@ bot = GameBot(init_cogs)
 
 @bot.event
 async def on_ready():
-    print("Bot is online.")
+    print("Bot is online!")
     await bot.add_cog(ClassMenu(bot)) 
     await bot.add_cog(UsernameEntry(bot))
     await bot.add_cog(Introduction(bot))
@@ -70,10 +70,8 @@ async def on_ready():
     await bot.add_cog(Inventory(bot))
     await bot.add_cog(Adventure(bot))
     await bot.add_cog(VillageShop(bot))
-    await bot.add_cog(Village_shop(bot))
+    await bot.add_cog(VillageShopBuy(bot))
     await bot.add_cog(Tavern(bot))
     await bot.add_cog(BossTroll(bot))
 
-
-# Add the ClassMenu cog to the bot
 bot.run(TOKEN)

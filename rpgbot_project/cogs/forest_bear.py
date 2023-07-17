@@ -17,16 +17,17 @@ class ForestBear(commands.Cog):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         forest_bear = await sync_to_async(Enemy.objects.get)(name="Forest bear")
         enemy_bear = EnemyInstance(enemy=forest_bear, current_health=forest_bear.max_health)
+        
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-
+        
         async def attack_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
                 enemy_attack, player_block, player_attack, enemy_block = await perform_attack(player, enemy_bear)
                 await handle_level_up(player, button_interaction.channel)
                 embed = create_battle_embed(player, enemy_bear, player_attack, enemy_attack, player_block, enemy_block)
                 await handle_battle_outcome(self.bot, player, enemy_bear, forest_location, embed, button_interaction, interaction.channel, message)
-
+        
         async def flee_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
                 flee_successful = random.choice([True, False]) 
@@ -41,13 +42,17 @@ class ForestBear(commands.Cog):
                     enemy_attack, player_block, player_attack, enemy_block = await perform_attack(player, enemy_bear, player_attempting_flee=True)
                     embed = create_battle_embed(player, enemy_bear, player_attack, enemy_attack, player_block, enemy_block, flee_failed=True)
                     await button_interaction.response.edit_message(embed=embed)
+        
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
         attack_button.callback = attack_button_callback
+        
         flee_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Flee", custom_id="flee_button")
         flee_button.callback = flee_button_callback
+        
         view = discord.ui.View()
         view.add_item(attack_button)
         view.add_item(flee_button)
+        
         embed = create_battle_embed(player, enemy_bear)
         message = await interaction.channel.send(embed=embed, view=view)
 

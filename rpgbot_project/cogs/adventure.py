@@ -97,6 +97,7 @@ class Adventure(commands.Cog):
         forest_wolf_cog = self.bot.get_cog("ForestWolf")
         await interaction.response.defer()
         await forest_wolf_cog.encounter_wolf(interaction)
+        
         roles_to_remove = ["Village", "Cave", "Adventure"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values
@@ -115,6 +116,7 @@ class Adventure(commands.Cog):
         forest_bear_cog = self.bot.get_cog("ForestBear")
         await interaction.response.defer()
         await forest_bear_cog.encounter_bear(interaction)
+        
         roles_to_remove = ["Village", "Cave", "Adventure"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values
@@ -133,6 +135,7 @@ class Adventure(commands.Cog):
         forest_goblin_cog = self.bot.get_cog("ForestGoblin")
         await interaction.response.defer()
         await forest_goblin_cog.encounter_goblin(interaction)
+        
         roles_to_remove = ["Village", "Cave", "Adventure"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values
@@ -169,6 +172,7 @@ class Adventure(commands.Cog):
         village_cog = self.bot.get_cog("Village")
         await interaction.response.defer()
         await village_cog.enter_village(interaction)
+        
         roles_to_remove = ["Forest", "Cave", "Adventure"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values

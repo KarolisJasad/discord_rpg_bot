@@ -71,16 +71,16 @@ class AreaSelection(commands.Cog):
 
         await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
 
-
-
-
     async def page_navigation(self, interaction, location_embeds):
         await interaction.message.delete()
         await interaction.channel.send(f"You have selected {location_embeds[self.page_index].title}")
+        
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        
         character_location = await sync_to_async(Location.objects.get)(name=location_embeds[self.page_index].title)
         player.location = character_location
+        
         role = discord.utils.get(interaction.guild.roles, name=player.location.name)
         if role:
             await interaction.user.add_roles(role)
@@ -90,7 +90,6 @@ class AreaSelection(commands.Cog):
             await self.forest_rat_cog.encounter_rat(interaction)
         elif self.page_index == 1:
             await self.cave_troll_cog.encounter_troll(interaction)
-
 
 def setup(bot):
     bot.add_cog(AreaSelection(bot))

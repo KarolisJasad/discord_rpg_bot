@@ -17,58 +17,45 @@ class ForestGoblin(commands.Cog):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         forest_goblin = await sync_to_async(Enemy.objects.get)(name="Forest goblin")
         enemy_goblin = EnemyInstance(enemy=forest_goblin, current_health=forest_goblin.max_health)
+        
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-
+        
         async def attack_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
-                # Call the perform_attack function from fighting_logic.py
                 enemy_attack, player_block, player_attack, enemy_block = await perform_attack(player, enemy_goblin)
-
                 await handle_level_up(player, button_interaction.channel)
-
                 embed = create_battle_embed(player, enemy_goblin, player_attack, enemy_attack, player_block, enemy_block)
-
                 await handle_battle_outcome(self.bot, player, enemy_goblin, forest_location, embed, button_interaction, interaction.channel, message)
 
         async def flee_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
                 flee_successful = random.choice([True, False])  # 50/50 chance of success
-
                 if flee_successful:
                     flee_embed = discord.Embed(title="Flee Successful", description="You successfully fled from the enemy!", color=discord.Color.green())
                     flee_view = discord.ui.View()  # Create a new view without buttons
                     await button_interaction.response.edit_message(embed=flee_embed, view=flee_view)
-
                     # Add a delay before returning to the village
                     await asyncio.sleep(2)  # Adjust the delay time as needed
-
-                    # Handle the logic after a successful flee (e.g., returning to the village)
                     village_cog = self.bot.get_cog("Village")
                     await village_cog.enter_village(interaction)
                 else:
-                    # Continue with the battle logic
                     enemy_attack, player_block, player_attack, enemy_block = await perform_attack(player, enemy_goblin, player_attempting_flee=True)
-
-                    # Update the embed with the battle updates
                     embed = create_battle_embed(player, enemy_goblin, player_attack, enemy_attack, player_block, enemy_block, flee_failed=True)
                     await button_interaction.response.edit_message(embed=embed)
-
-        # Create the attack and flee buttons
+        
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
         attack_button.callback = attack_button_callback
-
+        
         flee_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Flee", custom_id="flee_button")
         flee_button.callback = flee_button_callback
-
+        
         view = discord.ui.View()
         view.add_item(attack_button)
         view.add_item(flee_button)
-
+        
         embed = create_battle_embed(player, enemy_goblin)
-
         message = await interaction.channel.send(embed=embed, view=view)
-
 
 def setup(bot):
     bot.add_cog(ForestGoblin(bot))
