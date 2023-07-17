@@ -5,6 +5,7 @@ from rpgbot.models import Location, Player
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 from cogs.village_shop import Village_shop
+from cogs.tavern import Tavern
 
 
 class Village(commands.Cog):
@@ -32,16 +33,19 @@ class Village(commands.Cog):
         profile_button.callback = self.on_profile_button_click
         adventure_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Adventure", custom_id="adventure_button")
         adventure_button.callback = self.on_adventure_button_click
+        tavern_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Tavern", custom_id="tavern_button")
+        tavern_button.callback = self.on_tavern_button_click
         village.add_item(shop_button)
         village.add_item(profile_button)
         village.add_item(adventure_button)
+        village.add_item(tavern_button)
 
         await interaction.followup.send(embed=location_embed, view=village)
 
     async def on_shop_button_click(self, interaction: discord.Interaction):
         self.shop_cog = self.bot.get_cog("Village_shop")
         await interaction.response.defer()
-        roles_to_remove = ["Forest", "Cave", "Adventure", "Village"]
+        roles_to_remove = ["Forest", "Cave", "Adventure", "Village", "Tavern"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values
         if roles:
@@ -64,7 +68,7 @@ class Village(commands.Cog):
     async def on_adventure_button_click(self, interaction: discord.Interaction):
         self.adventure_cog = self.bot.get_cog("Adventure")
         await interaction.response.defer()
-        roles_to_remove = ["Forest", "Village", "Cave"]
+        roles_to_remove = ["Forest", "Village", "Cave", "Tavern", "Shop"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values
         if roles:
@@ -78,6 +82,24 @@ class Village(commands.Cog):
             await interaction.user.add_roles(role)
         await sync_to_async(player.save)()
         await self.adventure_cog.open_adventure(interaction)
+
+    async def on_tavern_button_click(self, interaction: discord.Interaction):
+        self.tavern_cog = self.bot.get_cog("Tavern")
+        await interaction.response.defer()
+        roles_to_remove = ["Forest", "Village", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Tavern")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
+        await self.tavern_cog.enter_tavern(interaction)
 
 def setup(bot):
     bot.add_cog(Village(bot))

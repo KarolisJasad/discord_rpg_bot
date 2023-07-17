@@ -18,9 +18,7 @@ from cogs.inventory import Inventory
 from cogs.adventure import Adventure
 from cogs.village_shop import Village_shop
 from cogs.village_shop_buy import VillageShop
-
-
-
+from cogs.tavern import Tavern
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -47,6 +45,7 @@ init_cogs = [
     "cogs.adventure",
     "cogs.village_shop",
     "cogs.village_shop_buy",
+    "cogs.tavern",
 
 ]
 
@@ -70,6 +69,7 @@ async def on_ready():
     await bot.add_cog(Adventure(bot))
     await bot.add_cog(VillageShop(bot))
     await bot.add_cog(Village_shop(bot))
+    await bot.add_cog(Tavern(bot))
 
 
 # Add the ClassMenu cog to the bot
