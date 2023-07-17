@@ -12,9 +12,10 @@
 </head>
 <body>
     <div class="navbar">
-        <li><a class="{% if section == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a></li>
-        <li><a class="{% if section == 'leaderboard' %}active{% endif %}" href="{% url 'leaderboard' %}">Leaderboard</a></li>
-        <li><a class="{% if section == 'items' %}active{% endif %}" href="{% url 'items' %}">Items</a></li>
+        <li><a class="about" href="{% url 'about' %}">About</a></li>
+        <li><a class="leaderboard" href="{% url 'leaderboard' %}">Leaderboard</a></li>
+        <li><a class="items" href="{% url 'items' %}">Items</a></li>
+        <li><a class="stats" href="{% url 'stats' %}">Stats explanation</a></li>
     </div>
 
     <div class="content">

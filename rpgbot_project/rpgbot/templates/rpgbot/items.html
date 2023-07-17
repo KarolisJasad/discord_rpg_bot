@@ -1,6 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Items</h1>
-<p>This is the Items page.</p>
+  <h1>Items</h1>
+  <h2> List of all available items </h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Attack</th>
+        <th>Health</th>
+        <th>Defense</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.attack }}</td>
+          <td>{{ item.health }}</td>
+          <td>{{ item.defense }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

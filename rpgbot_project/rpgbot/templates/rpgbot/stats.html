@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Stats Explanation</h1>
+  <h2>Attack</h2>
+  <p>Your player deals damage equal to your total attack value plus or minus 10 damage, which is randomly generated to make combat more unpredictable and fun. For example, if you have 10 attack, your damage range will be between 0 and 30.</p>
+
+  <h2>Defense</h2>
+  <p>Defense determines how much damage your player or enemy takes. Each point of defense reduces damage taken by 1%. Defense also involves random generation. Blocked damage will be equal to a percentage of the damage taken, plus or minus 1. For example, if you have 10 defense and you are hit for 100 damage, the enemy will hit you in the range of 89 to 91 damage.</p>
+
+  <h2>Health</h2>
+  <p>Health determines how much damage your player can withstand. If your health is reduced to 0, your game is over, and your player is deleted. You will have to start all over again.</p>
+{% endblock %}

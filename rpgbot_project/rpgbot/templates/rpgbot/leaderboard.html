@@ -1,6 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Leaderboard</h1>
-<p>This is the Leaderboard page.</p>
+  <h1>Leaderboard</h1>
+  <h2> Rankings based on highest level </h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Discord</th>
+        <th>Username</th>
+        <th>Level</th>
+        <th>Class</th>
+        <th>Max health</th>
+        <th>Attack</th>
+        <th>Defense</th>
+        <th>Location</th> 
+      </tr>
+    </thead>
+    <tbody>
+      {% for player in players %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ player.discord_name }}</td>
+          <td>{{ player.username }}</td>
+          <td>{{ player.level }}</td>
+          <td>{{ player.character_class }}</td>
+          <td>{{ player.max_health }}</td>
+          <td>{{ player.attack }}</td>
+          <td>{{ player.defense }}</td>
+          <td>{{ player.location }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

@@ -1,1 +1,1 @@
-DELETE FROM rpgbot_player WHERE equipped_weapon_id = 3
+DELETE FROM rpgbot_player WHERE username = "Test"

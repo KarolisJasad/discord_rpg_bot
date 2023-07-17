@@ -102,3 +102,26 @@ p {
 .navbar a:hover {
     color: #aaaaaa;
 }
+
+/* Leaderboard styling */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #222222;
+    color: #ffffff;
+  }
+  
+  tr:hover {
+    background-color: #acacac;
+  }
