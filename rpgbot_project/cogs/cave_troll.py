@@ -67,12 +67,5 @@ class CaveTroll(commands.Cog):
 
         message = await interaction.channel.send(embed=embed, view=view)
 
-        # Wait for the button click event or timeout after 180 seconds
-        try:
-            await asyncio.wait_for(view.wait(), timeout=180.0)
-        except asyncio.TimeoutError:
-            await interaction.channel.send("Battle timeout. You took too long to respond.")
-            return
-
 def setup(bot):
     bot.add_cog(CaveTroll(bot))
