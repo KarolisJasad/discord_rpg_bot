@@ -16,7 +16,7 @@ class ForestGoblin(commands.Cog):
     async def encounter_goblin(self, interaction: discord.Interaction):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         forest_goblin = await sync_to_async(Enemy.objects.get)(name="Forest goblin")
-        enemy_goblin = EnemyInstance(enemy=forest_goblin, current_health=forest_goblin.max_health)
+        enemy_goblin = EnemyInstance(enemy=forest_goblin, current_health=forest_goblin.max_health, enemy_level=forest_goblin.level)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
 
