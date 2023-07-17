@@ -4,6 +4,10 @@ from utilities.gamebot import GameBot
 from rpgbot.models import Location, Player, Enemy
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
+from cogs.forest_wolf import ForestWolf
+from cogs.forest_bear import ForestBear
+from cogs.forest_goblin import ForestGoblin
+from cogs.boss_troll import BossTroll
 
 class Adventure(commands.Cog):
     def __init__(self, bot: GameBot):
@@ -47,6 +51,15 @@ class Adventure(commands.Cog):
         )
         forest_goblin_button.callback = self.on_goblin_button_click
 
+        boss_troll = await sync_to_async(Enemy.objects.get)(name="Boss Troll")
+        boss_troll_level = boss_troll.level
+        boss_troll_button = discord.ui.Button(
+            style=discord.ButtonStyle.primary,
+            label=f"Boss troll (Level {boss_troll_level})",
+            custom_id="boss_troll"
+        )
+        boss_troll_button.callback = self.warning_button_click
+
         village = discord.ui.Button(
             style=discord.ButtonStyle.primary,
             label="Back to Village",
@@ -57,10 +70,29 @@ class Adventure(commands.Cog):
         adventure.add_item(forest_goblin_button)
         adventure.add_item(forest_wolf_button)
         adventure.add_item(forest_bear_button)
+        adventure.add_item(boss_troll_button)
         adventure.add_item(village)
 
         await interaction.followup.send(embed=location_embed, view=adventure)
     
+    async def warning_button_click(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        warning = discord.ui.View()
+        warning_embed = discord.Embed(
+            title="Warning!",
+            description="This is a boss enemy. Prepare for a tough battle! It will be harder to flee away after you face the troll.",
+            color=discord.Color.red()
+        )
+        warning_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Continue to Fight", custom_id="continue_fight")
+        warning_button.callback = self.encounter_boss_troll
+        village_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Back to Village", custom_id="back_village")
+        village_button.callback = self.on_village_button_click
+
+        warning.add_item(warning_button)
+        warning.add_item(village_button)
+
+        await interaction.message.edit(embed=warning_embed, view=warning)
+
     async def on_wolf_button_click(self, interaction: discord.Interaction):
         forest_wolf_cog = self.bot.get_cog("ForestWolf")
         await interaction.response.defer()
@@ -112,6 +144,24 @@ class Adventure(commands.Cog):
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
+
+    async def encounter_boss_troll(self, interaction: discord.Interaction):
+        boss_troll_cog = self.bot.get_cog("BossTroll")
+        await interaction.response.defer()
+        await boss_troll_cog.encounter_boss_troll(interaction)
+        roles_to_remove = ["Village", "Forest", "Adventure", "Village Shop", "Village"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Cave")
         player.location = character_location
         role = discord.utils.get(interaction.guild.roles, name=player.location.name)
         if role:

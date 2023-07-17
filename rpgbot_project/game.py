@@ -20,6 +20,7 @@ from cogs.village_shop import VillageShop
 from cogs.village_shop_buy import VillageShopBuy
 from cogs.village_shop_sell import VillageShopSell
 from cogs.tavern import Tavern
+from cogs.boss_troll import BossTroll
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -47,6 +48,7 @@ init_cogs = [
     "cogs.village_shop",
     "cogs.village_shop_buy",
     "cogs.tavern",
+    "cogs.boss_troll",
 
 ]
 
@@ -72,5 +74,6 @@ async def on_ready():
     await bot.add_cog(VillageShopBuy(bot))
     await bot.add_cog(VillageShopSell(bot))
     await bot.add_cog(Tavern(bot))
+    await bot.add_cog(BossTroll(bot))
 
 bot.run(TOKEN)

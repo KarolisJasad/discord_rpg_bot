@@ -45,7 +45,6 @@ class ClassMenu(commands.Cog):
             elif interaction.data["custom_id"] == "select_button":
                 print("Selected button")
                 await self.handle_class_selection(interaction)
-                await interaction.response.defer()
             await interaction.message.edit(embed=class_embeds[self.page_index])
         
         self.previous_button.callback = on_select_button_click
