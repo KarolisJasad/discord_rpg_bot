@@ -61,6 +61,14 @@ async def handle_battle_outcome(bot, player, enemy, location, embed, button_inte
     async def adventure_button_click(interaction: discord.Interaction):
         adventure_cog = bot.get_cog("Adventure")
         await interaction.response.defer()
+        role = discord.utils.get(interaction.user.guild.roles, name="Adventure")
+        if role:
+            await interaction.user.add_roles(role)
+        roles_to_remove = ["Village", "Forest"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
         await adventure_cog.open_adventure(interaction)
 
     if player.current_health > 0 and enemy.current_health <= 0:
