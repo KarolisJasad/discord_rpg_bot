@@ -35,7 +35,16 @@ class AreaSelection(commands.Cog):
 
         async def on_select_button_click(interaction: discord.Interaction):
             await interaction.response.defer()
-            
+
+            channel = interaction.channel
+            message_id = interaction.message.id
+
+            try:
+                message = await channel.fetch_message(message_id)
+            except discord.NotFound:
+                # Handle the case where the message is not found
+                return
+
             if interaction.data["custom_id"] == "previous_button":
                 self.page_index = (self.page_index - 1) % len(location_embeds)
             elif interaction.data["custom_id"] == "next_button":
@@ -43,7 +52,11 @@ class AreaSelection(commands.Cog):
             elif interaction.data["custom_id"] == "select_button":
                 await self.page_navigation(interaction, location_embeds)
 
-            await interaction.message.edit(embed=location_embeds[self.page_index])
+            try:
+                await message.edit(embed=location_embeds[self.page_index])
+            except discord.NotFound:
+                # Handle the case where the message is not found after edit
+                return
 
         self.previous_button.callback = on_select_button_click
         self.next_button.callback = on_select_button_click
@@ -55,8 +68,11 @@ class AreaSelection(commands.Cog):
 
         self.forest_rat_cog = self.bot.get_cog("ForestRat")
         self.cave_troll_cog = self.bot.get_cog("CaveTroll")
-        
+
         await ctx.send(embed=location_embeds[self.page_index], view=location_selection_view)
+
+
+
 
     async def page_navigation(self, interaction, location_embeds):
         await interaction.message.delete()
