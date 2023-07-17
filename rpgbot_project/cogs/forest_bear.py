@@ -14,7 +14,7 @@ class ForestBear(commands.Cog):
 
     @commands.command()
     async def encounter_bear(self, interaction: discord.Interaction):
-        forest_location = await sync_to_async(Location.objects.get)(name="Forest")
+        adventure_location = await sync_to_async(Location.objects.get)(name="Adventure")
         forest_bear = await sync_to_async(Enemy.objects.get)(name="Forest bear")
         enemy_bear = EnemyInstance(enemy=forest_bear, current_health=forest_bear.max_health)
         
@@ -26,7 +26,7 @@ class ForestBear(commands.Cog):
                 enemy_attack, player_block, player_attack, enemy_block = await perform_attack(player, enemy_bear)
                 await handle_level_up(player, button_interaction.channel)
                 embed = create_battle_embed(player, enemy_bear, player_attack, enemy_attack, player_block, enemy_block)
-                await handle_battle_outcome(self.bot, player, enemy_bear, forest_location, embed, button_interaction, interaction.channel, message)
+                await handle_battle_outcome(self.bot, player, enemy_bear, adventure_location, embed, button_interaction, interaction.channel, message)
         
         async def flee_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:

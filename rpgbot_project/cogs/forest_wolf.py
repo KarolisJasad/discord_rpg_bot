@@ -14,7 +14,7 @@ class ForestWolf(commands.Cog):
 
     @commands.command()
     async def encounter_wolf(self, interaction: discord.Interaction):
-        forest_location = await sync_to_async(Location.objects.get)(name="Forest")
+        forest_location = await sync_to_async(Location.objects.get)(name="Adventure")
         forest_wolf = await sync_to_async(Enemy.objects.get)(name="Forest wolf")
         enemy_wolf = EnemyInstance(enemy=forest_wolf, current_health=forest_wolf.max_health)
         

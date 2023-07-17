@@ -105,7 +105,7 @@ class Adventure(commands.Cog):
             await interaction.user.remove_roles(*roles)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        character_location = await sync_to_async(Location.objects.get)(name="Adventure")
         player.location = character_location
         role = discord.utils.get(interaction.guild.roles, name=player.location.name)
         if role:
@@ -124,7 +124,7 @@ class Adventure(commands.Cog):
             await interaction.user.remove_roles(*roles)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        character_location = await sync_to_async(Location.objects.get)(name="Adventure")
         player.location = character_location
         role = discord.utils.get(interaction.guild.roles, name=player.location.name)
         if role:
@@ -143,7 +143,7 @@ class Adventure(commands.Cog):
             await interaction.user.remove_roles(*roles)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        character_location = await sync_to_async(Location.objects.get)(name="Adventure")
         player.location = character_location
         role = discord.utils.get(interaction.guild.roles, name=player.location.name)
         if role:
