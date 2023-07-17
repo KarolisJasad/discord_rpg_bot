@@ -4,7 +4,7 @@ from utilities.gamebot import GameBot
 from rpgbot.models import Location, Player
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
-from cogs.village_shop import Village_shop
+from cogs.village_shop import VillageShop
 from cogs.tavern import Tavern
 
 
@@ -43,7 +43,7 @@ class Village(commands.Cog):
         await interaction.followup.send(embed=location_embed, view=village)
 
     async def on_shop_button_click(self, interaction: discord.Interaction):
-        self.shop_cog = self.bot.get_cog("Village_shop")
+        self.shop_cog = self.bot.get_cog("VillageShop")
         await interaction.response.defer()
         roles_to_remove = ["Forest", "Cave", "Adventure", "Village", "Tavern"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]

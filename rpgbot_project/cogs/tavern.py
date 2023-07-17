@@ -78,10 +78,11 @@ class Tavern(commands.Cog):
         await interaction.followup.send(embed=tavern_embed, view=tavern_view)
 
     async def regenerate_hp(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         player.current_health = player.max_health
-        await interaction.response.edit_message(content=f"You feel fresh and strong again.")
+        await interaction.followup.send(content="You feel fresh and strong again and your health was restored.")
         await sync_to_async(player.save)()
 
     async def on_village_button_click(self, interaction: discord.Interaction):

@@ -1,12 +1,11 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Location, Player, Enemy
+from rpgbot.models import Location, Player
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
-from cogs.village_shop_buy import VillageShop
 
-class Village_shop(commands.Cog):
+class VillageShop(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
     
@@ -35,7 +34,7 @@ class Village_shop(commands.Cog):
         await interaction.followup.send(embed=location_embed, view=village)
 
     async def on_buy_button_click(self, interaction: discord.Interaction):
-        village_shop_cog = self.bot.get_cog("VillageShop")
+        village_shop_cog = self.bot.get_cog("VillageShopBuy")
         await interaction.response.defer()
         await village_shop_cog.open_shop(interaction)
 
@@ -64,4 +63,4 @@ class Village_shop(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Village_shop(bot))
+    bot.add_cog(VillageShop(bot))

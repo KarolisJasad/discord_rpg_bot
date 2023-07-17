@@ -1,12 +1,12 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Shop, Item, Location, Player, ItemInstance
+from rpgbot.models import Shop, Item, Player, ItemInstance
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 
 
-class VillageShop(commands.Cog):
+class VillageShopBuy(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
 
@@ -66,4 +66,4 @@ class VillageShop(commands.Cog):
         await village_cog.enter_village(interaction)
 
 def setup(bot):
-    bot.add_cog(VillageShop(bot))
+    bot.add_cog(VillageShopBuy(bot))
