@@ -12,6 +12,11 @@ class Village(commands.Cog):
 
     @commands.command()
     async def enter_village(self, interaction: discord.Interaction):
+        roles_to_remove = ["Forest", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
         village_location = await sync_to_async(Location.objects.get)(name="Village")
         village_page = discord.Embed(title=village_location.name, color=discord.Color.blue())
         village_page.add_field(name="Description", value=village_location.description)
@@ -45,7 +50,20 @@ class Village(commands.Cog):
     async def on_adventure_button_click(self, interaction: discord.Interaction):
         self.adventure_cog = self.bot.get_cog("Adventure")
         await interaction.response.defer()
+        roles_to_remove = ["Forest", "Village", "Cave"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Adventure")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
         await self.adventure_cog.open_adventure(interaction)
-        
+
 def setup(bot):
     bot.add_cog(Village(bot))

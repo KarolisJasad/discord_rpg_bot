@@ -57,12 +57,10 @@ class Adventure(commands.Cog):
         )
         village.callback = self.on_village_button_click
 
+        adventure.add_item(forest_goblin_button)
         adventure.add_item(forest_wolf_button)
         adventure.add_item(forest_bear_button)
-        adventure.add_item(forest_goblin_button)
         adventure.add_item(village)
-
-
 
         await interaction.followup.send(embed=location_embed, view=adventure)
     
@@ -70,22 +68,73 @@ class Adventure(commands.Cog):
         forest_wolf_cog = self.bot.get_cog("ForestWolf")
         await interaction.response.defer()
         await forest_wolf_cog.encounter_wolf(interaction)
+        roles_to_remove = ["Village", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
 
     async def on_bear_button_click(self, interaction: discord.Interaction):
         forest_bear_cog = self.bot.get_cog("ForestBear")
         await interaction.response.defer()
         await forest_bear_cog.encounter_bear(interaction)
+        roles_to_remove = ["Village", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
 
     async def on_goblin_button_click(self, interaction: discord.Interaction):
         forest_goblin_cog = self.bot.get_cog("ForestGoblin")
         await interaction.response.defer()
         await forest_goblin_cog.encounter_goblin(interaction)
+        roles_to_remove = ["Village", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Forest")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
 
     async def on_village_button_click(self, interaction: discord.Interaction):
         village_cog = self.bot.get_cog("Village")
         await interaction.response.defer()
         await village_cog.enter_village(interaction)
+        roles_to_remove = ["Forest", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Village")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
 
 def setup(bot):
     bot.add_cog(Adventure(bot))
-

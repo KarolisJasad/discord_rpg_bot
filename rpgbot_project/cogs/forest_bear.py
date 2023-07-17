@@ -16,7 +16,7 @@ class ForestBear(commands.Cog):
     async def encounter_bear(self, interaction: discord.Interaction):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         forest_bear = await sync_to_async(Enemy.objects.get)(name="Forest bear")
-        enemy_bear = EnemyInstance(enemy=forest_bear, current_health=forest_bear.max_health, enemy_level=forest_bear.level)
+        enemy_bear = EnemyInstance(enemy=forest_bear, current_health=forest_bear.max_health)
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
 

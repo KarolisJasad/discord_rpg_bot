@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from rpgbot.models import Enemy, Player, Location, EnemyInstance
-import random
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
 import asyncio
