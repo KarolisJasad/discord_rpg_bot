@@ -45,7 +45,17 @@ class Village(commands.Cog):
     async def on_adventure_button_click(self, interaction: discord.Interaction):
         self.adventure_cog = self.bot.get_cog("Adventure")
         await interaction.response.defer()
+        roles_to_remove = ["Forest", "Village", "Cave", "Adventure"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
         await self.adventure_cog.open_adventure(interaction)
+
+
+
+
+    
         
 def setup(bot):
     bot.add_cog(Village(bot))

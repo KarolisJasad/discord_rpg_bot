@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Location, Player, Enemy
+from rpgbot.models import Location, Enemy, Player
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 from cogs.forest_wolf import ForestWolf
@@ -11,7 +11,7 @@ from cogs.forest_goblin import ForestGoblin
 class Adventure(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
-    
+   
     @commands.command()
     async def open_adventure(self, interaction: discord.Interaction):
         adventure_location = await sync_to_async(Location.objects.get)(name="Adventure")
@@ -21,8 +21,17 @@ class Adventure(commands.Cog):
 
         location_embed = adventure_page
 
-        adventure = discord.ui.View()
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name=location_embed.title)
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
 
+        adventure = discord.ui.View()
         forest_wolf = await sync_to_async(Enemy.objects.get)(name="Forest wolf")
         forest_wolf_level = forest_wolf.level
         forest_wolf_button = discord.ui.Button(
