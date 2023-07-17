@@ -4,7 +4,6 @@ from utilities.gamebot import GameBot
 from rpgbot.models import Location, Player
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
-from cogs.forest_rat import ForestRat
 from cogs.forest_wolf import ForestWolf
 from cogs.forest_bear import ForestBear
 from cogs.forest_goblin import ForestGoblin
@@ -23,8 +22,6 @@ class Adventure(commands.Cog):
         location_embed = adventure_page
 
         adventure = discord.ui.View()
-        forest_rat = discord.ui.Button(style=discord.ButtonStyle.primary, label="Forest rat", custom_id="forest_rat")
-        forest_rat.callback = self.on_rat_button_click
         forest_wolf = discord.ui.Button(style=discord.ButtonStyle.primary, label="Forest wolf", custom_id="forest_wolf")
         forest_wolf.callback = self.on_wolf_button_click
         forest_bear = discord.ui.Button(style=discord.ButtonStyle.primary, label="Forest bear", custom_id="forest_bear")
@@ -33,18 +30,12 @@ class Adventure(commands.Cog):
         forest_goblin.callback = self.on_goblin_button_click
         village = discord.ui.Button(style=discord.ButtonStyle.primary, label="Back to Village", custom_id="village")
         village.callback = self.on_village_button_click
-        adventure.add_item(forest_rat)
         adventure.add_item(forest_wolf)
         adventure.add_item(forest_bear)
         adventure.add_item(forest_goblin)
         adventure.add_item(village)
 
         await interaction.followup.send(embed=location_embed, view=adventure)
-
-    async def on_rat_button_click(self, interaction: discord.Interaction):
-        forest_rat_cog = self.bot.get_cog("ForestRat")
-        await interaction.response.defer()
-        await forest_rat_cog.encounter_rat(interaction)
     
     async def on_wolf_button_click(self, interaction: discord.Interaction):
         forest_wolf_cog = self.bot.get_cog("ForestWolf")
