@@ -187,29 +187,29 @@ class Player(models.Model):
         elif item_type == Item.RING:
             if not self.equipped_ring1:
                 self.equipped_ring1 = item_instance
-                self.attack += self.equipped_ring1.attack
-                self.defense += self.equipped_ring1.defense
-                self.max_health += self.equipped_ring1.health
+                self.attack += self.equipped_ring1.item.attack
+                self.defense += self.equipped_ring1.item.defense
+                self.max_health += self.equipped_ring1.item.health
                 self.current_health += self.equipped_ring1.health
             elif not self.equipped_ring2:
                 self.equipped_ring2 = item_instance
-                self.attack += self.equipped_ring2.attack
-                self.defense += self.equipped_ring2.defense
-                self.max_health += self.equipped_ring2.health
-                self.current_health += self.equipped_ring2.health
+                self.attack += self.equipped_ring2.item.attack
+                self.defense += self.equipped_ring2.item.defense
+                self.max_health += self.equipped_ring2.item.health
+                self.current_health += self.equipped_ring2.item.health
             else:
                 if self.equipped_ring1.item.attack <= self.equipped_ring2.attack:
                     self.inventory.add(self.equipped_ring1)
-                    self.attack -= self.equipped_ring1.attack
-                    self.defense -= self.equipped_ring1.defense
-                    self.max_health -= self.equipped_ring1.health
+                    self.attack -= self.equipped_ring1.item.attack
+                    self.defense -= self.equipped_ring1.item.defense
+                    self.max_health -= self.equipped_ring1.item.health
                     if self.current_health > self.max_health:
                         self.current_health = self.max_health
                     self.equipped_ring1 = item_instance
-                    self.attack += self.equipped_ring1.attack
-                    self.defense += self.equipped_ring1.defense
-                    self.max_health += self.equipped_ring1.health
-                    self.current_health += self.equipped_ring1.health
+                    self.attack += self.equipped_ring1.item.attack
+                    self.defense += self.equipped_ring1.item.defense
+                    self.max_health += self.equipped_ring1.item.health
+                    self.current_health += self.equipped_ring1.item.health
                 else:
                     self.inventory.add(self.equipped_ring2)
                     self.attack -= self.equipped_ring2.item.attack
