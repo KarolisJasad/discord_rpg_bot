@@ -300,22 +300,18 @@ class Player(models.Model):
         defense_range = random.randint(-1, 1)
         modified_attack = self.attack + damage_range
         blocked_damage = round((modified_attack/100*enemy.defense) + defense_range)
-        # Ensure damage is non-negative
         modified_attack = max(modified_attack, 0)
         blocked_damage = max(blocked_damage, 0)
-        # Reduce the enemy's health based on the damage dealt
         enemy_instance.current_health -= modified_attack - blocked_damage
         enemy_instance.current_health = max(enemy_instance.current_health, 0)  # Ensure enemy health doesn't go below 0
 
         # # Check if the enemy is defeated
         if enemy_instance.current_health <= 0:
-            # Handle enemy defeat (e.g., grant player experience points, rewards, etc.)
             self.money += enemy.gold
             self.xp += enemy.xp
             drops = enemy_instance.drop_items(self)
             for item_instance in drops:
                 self.inventory.add(item_instance)
-        # Save the updated player and enemy objects to the database
         self.save()
         enemy_instance.save()
         return modified_attack, blocked_damage
@@ -478,13 +474,11 @@ class EnemyInstance(models.Model):
         # Ensure damage is non-negative
         e_modified_attack = max(e_modified_attack, 0)
         blocked_damage = max(blocked_damage, 0)
-        # Reduce the player's health based on the damage dealt
         player.current_health -= e_modified_attack - blocked_damage
         player.current_health = max(player.current_health, 0)  # Ensure player health doesn't go below 0
 
         # Check if the player is defeated
         if player.current_health <= 0:
-            # Handle player defeat (e.g., reset player attributes, display game over message, etc.)
             self.handle_player_defeat(player)
 
         # Save the updated enemy and player objects to the database
@@ -493,11 +487,7 @@ class EnemyInstance(models.Model):
         return e_modified_attack, blocked_damage
 
     def handle_player_defeat(self, player):
-        # Reset player attributes or perform any other necessary actions
         player.delete()
-        # ... other attribute resets ...
-
-        # Save the updated player object to the database
         player.save()
     
     def drop_items(self, player):
