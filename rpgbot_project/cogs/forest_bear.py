@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 import asyncio
 from utilities.levelup_embed import handle_level_up
 from cogs.village import Village
+from utilities.fighting_logic import perform_attack, create_battle_embed, handle_battle_outcome
 
 class ForestBear(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -20,68 +21,17 @@ class ForestBear(commands.Cog):
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
 
-        def check_author(author_id):
-            return interaction.user.id == author_id
-
         async def attack_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
-                # Player's attack logic goes here
-                enemy_attack, player_block = await sync_to_async(enemy_bear.attack_player)(player)
-                player_attack, enemy_block = await sync_to_async(player.attack_enemy)(enemy_bear)
+                # Call the perform_attack function from fight_utils.py
+                enemy_attack, player_block, player_attack, enemy_block = await perform_attack(player, enemy_bear)
 
                 await handle_level_up(player, button_interaction.channel)
 
-                embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
-                embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
-                embed.add_field(name=enemy_bear.enemy.name, value=f":heart: **HP**: {enemy_bear.current_health}/{enemy_bear.enemy.max_health}\n:crossed_swords: **ATTACK**: {enemy_bear.enemy.attack}\n:shield: **DEFENCE**: {enemy_bear.enemy.defense}", inline=True)
-                embed.add_field(name="Player Attack", value=f"{player.username} attacks {enemy_bear.enemy.name} and deals {player_attack} damage {enemy_block} was blocked.", inline=False)
-                embed.add_field(name="Enemy Attack", value=f"{enemy_bear.enemy.name} attacks {player.username} and deals {enemy_attack} damage {player_block} was blocked.", inline=False)
-                if player.current_health > 0 and enemy_bear.current_health <= 0:
-                    victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy_bear.enemy.name}, you've gained {enemy_bear.enemy.xp} experience and {enemy_bear.enemy.gold} gold!", color=discord.Color.green())
-                    victory_embed.add_field(name="Journey continues", value=forest_location.victory_message)
-                    victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
-                    continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Enter village", custom_id="continue_button")
-                    victory_view = discord.ui.View()
-                    victory_view.add_item(continue_button)
-                    continue_button.callback = continue_button_click
-                    adventure_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Adventure", custom_id="adventure_button")
-                    victory_view.add_item(adventure_button)
-                    adventure_button.callback = on_adventure_button_click
-                elif player.current_health <= 0 and enemy_bear.current_health >= 0:
-                    defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy_bear.enemy.name}!", color=discord.Color.red())
-                    defeat_embed.add_field(name="Journey ended", value=forest_location.defeat_message)
-                    defeat_embed.set_image(url="https://i.imgur.com/ZTgj0so.jpg")
-                    roles_to_remove = ["Forest", "Village", "Cave", "Warrior", "Mage", "Rogue"]
-                    roles = [discord.utils.get(button_interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
-                    roles = [role for role in roles if role is not None]  # Filter out None values
-                    if roles:
-                        await button_interaction.user.remove_roles(*roles)
-                    await interaction.channel.send(embed=defeat_embed)
-                if player.current_health > 0 and enemy_bear.current_health <= 0:
-                    await button_interaction.response.edit_message(embed=embed)
-                    await interaction.channel.send(embed=victory_embed, view=victory_view)
-                    await message.delete()
+                embed = create_battle_embed(player, enemy_bear, player_attack, enemy_attack, player_block, enemy_block)
 
-                else:
-                    await button_interaction.response.edit_message(embed=embed)
-        
-        async def continue_button_click(interaction: discord.Interaction):
-            if interaction.data["custom_id"] == "continue_button":
-                role = discord.utils.get(interaction.user.guild.roles, name="Forest")
-                if role:
-                    await interaction.user.remove_roles(role)
-                role = discord.utils.get(interaction.user.guild.roles, name="Village")
-                if role:
-                    await interaction.user.add_roles(role)
-                await interaction.response.defer()
-                village_cog = self.bot.get_cog("Village")
-                await village_cog.enter_village(interaction)
-        
-        async def on_adventure_button_click(interaction: discord.Interaction):
-            adventure_cog = self.bot.get_cog("Adventure")
-            await interaction.response.defer()
-            await adventure_cog.open_adventure(interaction)
-                
+                await handle_battle_outcome(self.bot, player, enemy_bear, forest_location, embed, button_interaction, interaction.channel, message)
+
         # Create the attack button
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
         attack_button.callback = attack_button_callback
@@ -89,11 +39,7 @@ class ForestBear(commands.Cog):
         view = discord.ui.View()
         view.add_item(attack_button)
 
-        embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
-        embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
-        embed.add_field(name=enemy_bear.enemy.name, value=f":heart: **HP**: {enemy_bear.current_health}/{enemy_bear.enemy.max_health}\n:crossed_swords: **ATTACK**: {enemy_bear.enemy.attack}\n:shield: **DEFENCE**: {enemy_bear.enemy.defense}", inline=True)
-        embed.add_field(name="Player Attack", value="Waiting for your next move...", inline=False)
-        embed.add_field(name="Enemy Attack", value="Responding to your action", inline=False)
+        embed = create_battle_embed(player, enemy_bear)
 
         message = await interaction.channel.send(embed=embed, view=view)
 

@@ -43,7 +43,7 @@ init_cogs = [
     "cogs.profile",
     "cogs.inventory",
     "cogs.adventure",
-    # "cogs.village_shop",
+    "cogs.village_shop",
 
 ]
 
