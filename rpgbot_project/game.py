@@ -18,6 +18,7 @@ from cogs.inventory import Inventory
 from cogs.adventure import Adventure
 from cogs.village_shop import VillageShop
 from cogs.village_shop_buy import VillageShopBuy
+from cogs.village_shop_sell import VillageShopSell
 from cogs.tavern import Tavern
 from cogs.boss_troll import BossTroll
 
@@ -71,6 +72,7 @@ async def on_ready():
     await bot.add_cog(Adventure(bot))
     await bot.add_cog(VillageShop(bot))
     await bot.add_cog(VillageShopBuy(bot))
+    await bot.add_cog(VillageShopSell(bot))
     await bot.add_cog(Tavern(bot))
     await bot.add_cog(BossTroll(bot))
 

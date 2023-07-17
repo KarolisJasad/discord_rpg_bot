@@ -41,9 +41,9 @@ class VillageShop(commands.Cog):
         await village_shop_cog.open_shop(interaction)
 
     async def on_sell_button_click(self, interaction: discord.Interaction):
-        # Handle the sell button click event
+        village_shop_sell_cog = self.bot.get_cog("VillageShopSell")
         await interaction.response.defer()
-        # Your logic for the sell button
+        await village_shop_sell_cog.sell_item(interaction)
 
     async def on_back_button_click(self, interaction: discord.Interaction):
         village_cog = self.bot.get_cog("Village")
