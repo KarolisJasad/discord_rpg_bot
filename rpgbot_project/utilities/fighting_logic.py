@@ -1,8 +1,5 @@
-from rpgbot.models import EnemyInstance
 from asgiref.sync import sync_to_async
-from utilities.levelup_embed import handle_level_up
 import discord
-import asyncio
 
 async def perform_attack(player, enemy, player_attempting_flee=False):
     enemy_attack, player_block = await sync_to_async(enemy.attack_player)(player)
@@ -66,7 +63,7 @@ async def handle_battle_outcome(bot, player, enemy, location, embed, button_inte
             await interaction.user.add_roles(role)
         roles_to_remove = ["Village", "Forest"]
         roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
-        roles = [role for role in roles if role is not None]  # Filter out None values
+        roles = [role for role in roles if role is not None]
         if roles:
             await interaction.user.remove_roles(*roles)
         await adventure_cog.open_adventure(interaction)

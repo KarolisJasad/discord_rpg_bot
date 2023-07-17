@@ -1,12 +1,9 @@
 import discord
 from discord.ext import commands
 from rpgbot.models import Enemy, Player, Location, EnemyInstance
-import random
 from django.shortcuts import get_object_or_404
 from asgiref.sync import sync_to_async
-import asyncio
 from utilities.levelup_embed import handle_level_up
-from cogs.village import Village
 
 class ForestRat(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -17,20 +14,18 @@ class ForestRat(commands.Cog):
         forest_location = await sync_to_async(Location.objects.get)(name="Forest")
         forest_rat = await sync_to_async(Enemy.objects.get)(name="Forest rat")
         enemy_rat = EnemyInstance(enemy=forest_rat, current_health=forest_rat.max_health)
+        
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
-
+        
         def check_author(author_id):
             return interaction.user.id == author_id
-
+        
         async def attack_button_callback(button_interaction: discord.Interaction):
             if button_interaction.user.id == interaction.user.id:
-                # Player's attack logic goes here
                 enemy_attack, player_block = await sync_to_async(enemy_rat.attack_player)(player)
                 player_attack, enemy_block = await sync_to_async(player.attack_enemy)(enemy_rat)
-
                 await handle_level_up(player, button_interaction.channel)
-
                 embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
                 embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
                 embed.add_field(name=enemy_rat.enemy.name, value=f":heart: **HP**: {enemy_rat.current_health}/{enemy_rat.enemy.max_health}\n:crossed_swords: **ATTACK**: {enemy_rat.enemy.attack}\n:shield: **DEFENCE**: {enemy_rat.enemy.defense}", inline=True)
@@ -58,7 +53,6 @@ class ForestRat(commands.Cog):
                     await button_interaction.response.edit_message(embed=embed)
                     await interaction.channel.send(embed=victory_embed, view=victory_view)
                     await message.delete()
-
                 else:
                     await button_interaction.response.edit_message(embed=embed)
         
@@ -73,24 +67,19 @@ class ForestRat(commands.Cog):
                 await interaction.response.defer()
                 village_cog = self.bot.get_cog("Village")
                 await village_cog.enter_village(interaction)
-                
-                        
-        # Create the attack button
+        
         attack_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Attack", custom_id="attack_button")
         attack_button.callback = attack_button_callback
-
+        
         view = discord.ui.View()
         view.add_item(attack_button)
-
+        
         embed = discord.Embed(title="Battle Updates", color=discord.Color.green())
         embed.add_field(name=player.username, value=f":heart: **HP**: {player.current_health}/{player.max_health}\n:crossed_swords: **ATTACK**: {player.attack}\n:shield: **DEFENCE**: {player.defense}", inline=True)
         embed.add_field(name=enemy_rat.enemy.name, value=f":heart: **HP**: {enemy_rat.current_health}/{enemy_rat.enemy.max_health}\n:crossed_swords: **ATTACK**: {enemy_rat.enemy.attack}\n:shield: **DEFENCE**: {enemy_rat.enemy.defense}", inline=True)
         embed.add_field(name="Player Attack", value="Waiting for your next move...", inline=False)
         embed.add_field(name="Enemy Attack", value="Responding to your action", inline=False)
-
-
         message = await interaction.channel.send(embed=embed, view=view)
-
 
 def setup(bot):
     bot.add_cog(ForestRat(bot))

@@ -2,9 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 import random
-from asgiref.sync import sync_to_async
-# from django.contrib.postgres.fields import JSONField
-import discord
 from dotenv import load_dotenv
 import os
 
