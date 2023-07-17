@@ -4,6 +4,7 @@ from utilities.gamebot import GameBot
 from rpgbot.models import Location, Player
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
+from cogs.village_shop import Village_shop
 
 
 class Village(commands.Cog):
@@ -38,9 +39,22 @@ class Village(commands.Cog):
         await interaction.followup.send(embed=location_embed, view=village)
 
     async def on_shop_button_click(self, interaction: discord.Interaction):
-        self.shop_cog = self.bot.get_cog("VillageShop")
+        self.shop_cog = self.bot.get_cog("Village_shop")
         await interaction.response.defer()
-        await self.shop_cog.open_shop(interaction)
+        roles_to_remove = ["Forest", "Cave", "Adventure", "Village"]
+        roles = [discord.utils.get(interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
+        roles = [role for role in roles if role is not None]  # Filter out None values
+        if roles:
+            await interaction.user.remove_roles(*roles)
+        player_id = str(interaction.user.id)
+        player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
+        character_location = await sync_to_async(Location.objects.get)(name="Village Shop")
+        player.location = character_location
+        role = discord.utils.get(interaction.guild.roles, name=player.location.name)
+        if role:
+            await interaction.user.add_roles(role)
+        await sync_to_async(player.save)()
+        await self.shop_cog.open_village_shop(interaction)
     
     async def on_profile_button_click(self, interaction: discord.Interaction):
         self.profile_cog = self.bot.get_cog("Profile")
