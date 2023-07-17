@@ -1,11 +1,10 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Player, ItemInstance
+from rpgbot.models import Player, ItemInstance, Item
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 from collections import Counter
-
 
 class SelectView(discord.ui.View):
     def __init__(self, inventory_items, bot: GameBot):
@@ -15,18 +14,12 @@ class SelectView(discord.ui.View):
         added_items = set()  # Track the items that have already been added
         options = []
         for item in inventory_items:
-            if item_counts[item.item.name] > 1:
-                label = f"{item.item.name} x{item_counts[item.item.name]}"
-                if item.item.name not in added_items:
-                    added_items.add(item.item.name)  # Add the item to the set
-                    options.append(discord.SelectOption(label=label, value=str(item.id)))
-            else:
-                item_info = f"Attack: {item.item.attack} | Defense: {item.item.defense} | Health: {item.item.health}"
-                label = f"{item.item.name}\n{item_info}"
-                options.append(discord.SelectOption(label=label, value=str(item.id)))
+            sell_price = item.item.price // 2
+            label = f"{item.item.name}\nSell Price: {sell_price} gold"
+            options.append(discord.SelectOption(label=label, value=str(item.id)))
 
         select = discord.ui.Select(
-            placeholder="Select an item to equip",
+            placeholder="Select an item to sell",
             max_values=1,
             min_values=1,
             options=options
@@ -44,34 +37,34 @@ class SelectView(discord.ui.View):
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         item_id = int(selected_option)
         item_instance = await sync_to_async(get_object_or_404)(ItemInstance, id=item_id)
-        if await sync_to_async(player.can_equip_item)(item_instance):
-            await sync_to_async(player.equip_item)(item_instance)
-            await interaction.response.edit_message(content=f"Successfully equipped {item_instance.item.name}.")
-        else:
-            await interaction.response.edit_message(content=f"You cannot equip {item_instance.item.name}.")
+        await sync_to_async(print)(item_instance)
+        sell_price = round(item_instance.item.price / 2) # Calculate the sell price (half of the item's price)
+        player.money += sell_price  # Add the sell price to player's money
+        await sync_to_async(player.save)()  # Save the player's changes
+        await sync_to_async(item_instance.delete)()  # Delete the item from the inventory
+
+        await interaction.response.edit_message(content=f"You sold {item_instance.item.name} for {sell_price} gold.")
 
     async def on_back_button_click(self, interaction: discord.Interaction):
-        self.profile_cog = self.bot.get_cog("Profile")
+        village_cog = self.bot.get_cog("Village")
         await interaction.response.defer()
-        await self.profile_cog.open_profile(interaction)
+        await village_cog.enter_village(interaction)
 
-
-class Inventory(commands.Cog):
+class VillageShopSell(commands.Cog):
     def __init__(self, bot: GameBot):
         self.bot = bot
-
+    
     @commands.command()
-    async def open_inventory(self, interaction: discord.Interaction):
+    async def sell_item(self, interaction: discord.Interaction):
         player_id = str(interaction.user.id)
         player = await sync_to_async(get_object_or_404)(Player, player_id=player_id)
         inventory_items = await sync_to_async(list)(player.get_inventory_items())
         await sync_to_async(print)(inventory_items)
         if inventory_items:
             view = SelectView(inventory_items, bot=self.bot)
-            await interaction.followup.send("Select an item from your inventory to equip:", view=view)
+            await interaction.followup.send("Select an item to sell:", view=view)
         else:
             await interaction.followup.send("Your inventory is empty.")
 
-
 def setup(bot):
-    bot.add_cog(Inventory(bot))
+    bot.add_cog(VillageShopSell(bot))

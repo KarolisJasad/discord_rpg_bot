@@ -187,7 +187,7 @@ class Player(models.Model):
                 self.attack += self.equipped_ring1.item.attack
                 self.defense += self.equipped_ring1.item.defense
                 self.max_health += self.equipped_ring1.item.health
-                self.current_health += self.equipped_ring1.health
+                self.current_health += self.equipped_ring1.item.health
             elif not self.equipped_ring2:
                 self.equipped_ring2 = item_instance
                 self.attack += self.equipped_ring2.item.attack
