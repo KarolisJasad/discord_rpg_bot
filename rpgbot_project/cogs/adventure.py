@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities.gamebot import GameBot
-from rpgbot.models import Location, Player
+from rpgbot.models import Location, Player, Enemy
 from asgiref.sync import sync_to_async
 from django.shortcuts import get_object_or_404
 from cogs.forest_wolf import ForestWolf
@@ -22,18 +22,47 @@ class Adventure(commands.Cog):
         location_embed = adventure_page
 
         adventure = discord.ui.View()
-        forest_wolf = discord.ui.Button(style=discord.ButtonStyle.primary, label="Forest wolf", custom_id="forest_wolf")
-        forest_wolf.callback = self.on_wolf_button_click
-        forest_bear = discord.ui.Button(style=discord.ButtonStyle.primary, label="Forest bear", custom_id="forest_bear")
-        forest_bear.callback = self.on_bear_button_click
-        forest_goblin = discord.ui.Button(style=discord.ButtonStyle.primary, label="Forest goblin", custom_id="forest_goblin")
-        forest_goblin.callback = self.on_goblin_button_click
-        village = discord.ui.Button(style=discord.ButtonStyle.primary, label="Back to Village", custom_id="village")
+
+        forest_wolf = await sync_to_async(Enemy.objects.get)(name="Forest wolf")
+        forest_wolf_level = forest_wolf.level
+        forest_wolf_button = discord.ui.Button(
+            style=discord.ButtonStyle.primary,
+            label=f"Forest wolf (Level {forest_wolf_level})",
+            custom_id="forest_wolf"
+        )
+        forest_wolf_button.callback = self.on_wolf_button_click
+
+        forest_bear = await sync_to_async(Enemy.objects.get)(name="Forest bear")
+        forest_bear_level = forest_bear.level
+        forest_bear_button = discord.ui.Button(
+            style=discord.ButtonStyle.primary,
+            label=f"Forest bear (Level {forest_bear_level})",
+            custom_id="forest_bear"
+        )
+        forest_bear_button.callback = self.on_bear_button_click
+
+        forest_goblin = await sync_to_async(Enemy.objects.get)(name="Forest goblin")
+        forest_goblin_level = forest_goblin.level
+        forest_goblin_button = discord.ui.Button(
+            style=discord.ButtonStyle.primary,
+            label=f"Forest goblin (Level {forest_goblin_level})",
+            custom_id="forest_goblin"
+        )
+        forest_goblin_button.callback = self.on_goblin_button_click
+
+        village = discord.ui.Button(
+            style=discord.ButtonStyle.primary,
+            label="Back to Village",
+            custom_id="village"
+        )
         village.callback = self.on_village_button_click
-        adventure.add_item(forest_wolf)
-        adventure.add_item(forest_bear)
-        adventure.add_item(forest_goblin)
+
+        adventure.add_item(forest_wolf_button)
+        adventure.add_item(forest_bear_button)
+        adventure.add_item(forest_goblin_button)
         adventure.add_item(village)
+
+
 
         await interaction.followup.send(embed=location_embed, view=adventure)
     
