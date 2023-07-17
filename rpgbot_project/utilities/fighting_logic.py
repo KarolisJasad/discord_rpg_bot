@@ -31,16 +31,16 @@ def create_battle_embed(player, enemy, player_attack=None, enemy_attack=None, pl
     
     return embed
 
-def create_victory_embed(player, enemy, location):
+def create_victory_embed(player, enemy):
     victory_embed = discord.Embed(title="Victory", description=f"{player.username} defeated {enemy.enemy.name}, you've gained {enemy.enemy.xp} experience and {enemy.enemy.gold} gold!", color=discord.Color.green())
-    victory_embed.add_field(name="Journey continues", value=location.victory_message)
+    victory_embed.add_field(name="Journey continues", value="Choose your next option")
     victory_embed.set_image(url="https://i.imgur.com/SfgZiYt.jpg")
     
     return victory_embed
 
-def create_defeat_embed(player, enemy, location):
+def create_defeat_embed(player, enemy):
     defeat_embed = discord.Embed(title="Defeat", description=f"{player.username} was defeated by {enemy.enemy.name}!", color=discord.Color.red())
-    defeat_embed.add_field(name="Journey ended", value=location.defeat_message)
+    defeat_embed.add_field(name="Journey ended", value="You've lost to a formidabble opponent, unfortunately your journey ends.")
     defeat_embed.set_image(url="https://i.imgur.com/ZTgj0so.jpg")
     
     return defeat_embed
@@ -64,7 +64,7 @@ async def handle_battle_outcome(bot, player, enemy, location, embed, button_inte
         await adventure_cog.open_adventure(interaction)
 
     if player.current_health > 0 and enemy.current_health <= 0:
-        victory_embed = create_victory_embed(player, enemy, location)
+        victory_embed = create_victory_embed(player, enemy)
         continue_button = discord.ui.Button(style=discord.ButtonStyle.primary, label="Enter village", custom_id="continue_button")
         victory_view = discord.ui.View()
         victory_view.add_item(continue_button)
@@ -78,7 +78,7 @@ async def handle_battle_outcome(bot, player, enemy, location, embed, button_inte
         await channel.send(embed=victory_embed, view=victory_view)
         await message.delete()
     elif player.current_health <= 0 and enemy.current_health >= 0:
-        defeat_embed = create_defeat_embed(player, enemy, location)
+        defeat_embed = create_defeat_embed(player, enemy)
         roles_to_remove = ["Forest", "Village", "Cave", "Warrior", "Mage", "Rogue"]
         roles = [discord.utils.get(button_interaction.user.guild.roles, name=role_name) for role_name in roles_to_remove]
         roles = [role for role in roles if role is not None]  # Filter out None values

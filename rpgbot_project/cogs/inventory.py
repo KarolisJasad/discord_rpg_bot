@@ -23,9 +23,10 @@ class SelectView(discord.ui.View):
                     added_items.add(item.item.name)  # Add the item to the set
                     options.append(discord.SelectOption(label=label, value=str(item.id)))
             else:
-                label = item.item.name
+                item_info = f"Attack: {item.item.attack} | Defense: {item.item.defense} | Health: {item.item.health}"
+                label = f"{item.item.name}\n{item_info}"
                 options.append(discord.SelectOption(label=label, value=str(item.id)))
-
+                
         select = discord.ui.Select(
             placeholder="Select an item to equip",
             max_values=1,
