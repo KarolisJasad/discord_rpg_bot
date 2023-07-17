@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-description">
+    <h1>About the Game</h1>
+        <p>Welcome to our immersive RPG adventure where you embark on a journey through mystical lands filled with wonder and danger. Prepare to uncover the secrets of an ancient world and make choices that shape your destiny.</p>
+    </div>
+    <div class="about-section about-section-left">
+        <div class="about-image">
+            <img src="{% static 'images/village.jpg' %}" alt="Village Image">
+        </div>
+        <div class="about-details">
+            <h2>Explore a Richly Detailed World</h2>
+            <p>Our game takes you on a captivating exploration of diverse environments. From the peaceful Village nestled amidst picturesque landscapes to the foreboding darkness of the Cave and the enchanting depths of the Forest, each location is meticulously crafted to provide a unique experience.</p>
+        </div>
+    </div>
+    <div class="about-section about-section-right">
+        <div class="about-image">
+            <img src="{% static 'images/forest-troll.webp' %}" alt="Troll Image">
+        </div>
+        <div class="about-details">
+            <h2>A Tale of Heroism and Sacrifice</h2>
+            <p>As a traveler without a past, you find yourself caught in the midst of a gripping narrative. In the Village, you encounter a bard who reveals the village's plight - a fearsome Troll threatens their existence. Your journey will lead you through trials and challenges as you strive to save the village from impending doom.</p>
+        </div>
+    </div>
+    <div class="about-section about-section-left">
+        <div class="about-image">
+            <img src="{% static 'images/forest.jpg' %}" alt="Forest Image">
+        </div>
+        <div class="about-details">
+            <h2>Uncover Hidden Secrets</h2>
+            <p>As you traverse through the game, you'll uncover hidden secrets and unravel the mysteries that shroud this world. Delve into the depths of the Cave, where ancient secrets lie hidden within its dark recesses. Explore the Forest and encounter cunning creatures that guard their territories fiercely.</p>
+        </div>
+    </div>
+    <div class="about-section about-section-right">
+        <div class="about-image">
+            <img src="{% static 'images/trollfight.jpg' %}" alt="Battle Image">
+        </div>
+        <div class="about-details">
+            <h2>Fierce Battles and Heroic Feats</h2>
+            <p>Prepare for intense battles against formidable foes. Engage in strategic combat, utilizing your skills and abilities to overcome challenges. Make choices that shape your character's path and ultimately determine the fate of the village.</p>
+        </div>
+    </div>
+    <div class="about-section about-section-left">
+        <div class="about-image">
+            <img src="{% static 'images/joinparty.jpg' %}" alt="Join Image">
+        </div>
+        <div class="about-details">
+            <h2>Join the Adventure</h2>
+            <p>Are you ready to embark on an unforgettable journey? Join us and experience the thrill of our RPG game. Embrace the spirit of heroism and unravel the mysteries of a world filled with peril and opportunity.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

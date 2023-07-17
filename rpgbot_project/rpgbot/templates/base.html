@@ -1,16 +1,24 @@
 <!DOCTYPE html>
+{% load static i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<html lang="en">
 <html>
 <head>
-    <title>My Website</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title> {% block title %} My Website {% endblock title %}</title>
 </head>
 <body>
-    <nav>
-        <a href="{% url 'about' %}">About</a> |
-        <a href="{% url 'leaderboard' %}">Leaderboard</a> |
-        <a href="{% url 'items' %}">Items</a>
-    </nav>
+    <div class="navbar">
+        <li><a class="{% if section == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a></li>
+        <li><a class="{% if section == 'leaderboard' %}active{% endif %}" href="{% url 'leaderboard' %}">Leaderboard</a></li>
+        <li><a class="{% if section == 'items' %}active{% endif %}" href="{% url 'items' %}">Items</a></li>
+    </div>
 
-    {% block content %}
-    {% endblock %}
-</body>
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
 </html>

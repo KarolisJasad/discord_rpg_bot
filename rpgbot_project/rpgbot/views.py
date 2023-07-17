@@ -3,12 +3,12 @@ from django.shortcuts import render
 
 class AboutView(View):
     def get(self, request):
-        return render(request, 'about.html')
+        return render(request, 'rpgbot/about.html')
 
 class LeaderboardView(View):
     def get(self, request):
-        return render(request, 'leaderboard.html')
+        return render(request, 'rpgbot/leaderboard.html')
 
 class ItemsView(View):
     def get(self, request):
-        return render(request, 'items.html')
+        return render(request, 'rpgbot/items.html')
