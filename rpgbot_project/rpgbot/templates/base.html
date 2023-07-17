@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Website</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'about' %}">About</a> |
+        <a href="{% url 'leaderboard' %}">Leaderboard</a> |
+        <a href="{% url 'items' %}">Items</a>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
